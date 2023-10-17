@@ -1,4 +1,4 @@
-package fr.insa.appli;
+package model.model;
 
 public abstract class User {
     /* Attribut */

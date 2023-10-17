@@ -1,4 +1,4 @@
-package fr.insa.appli;
+package model.model;
 
 import java.util.ArrayList;
 

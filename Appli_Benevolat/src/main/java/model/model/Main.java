@@ -1,4 +1,4 @@
-package fr.insa.appli;
+package model.model;
 
 public class Main {
     public static void main(String[] args) {
