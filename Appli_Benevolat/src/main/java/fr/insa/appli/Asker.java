@@ -4,17 +4,17 @@ import java.util.ArrayList;
 
 public class Asker extends User{
     /*Attribut*/
-    ArrayList<Question> MyQuestions;
+    ArrayList<Mission> myMissions;
     /*constructeur*/
     public Asker (String nom,String prenom,int age) {
         super(nom,prenom,age);
-        this.MyQuestions = new ArrayList<>();
+        this.myMissions = new ArrayList<>();
     }
 
     /*Méthode*/
     public void create_question(String description){
-        Question q = new Question(description,this);
-        this.MyQuestions.add(q);
+        Mission q = new Mission(description,this);
+        this.myMissions.add(q);
     }
 
 }

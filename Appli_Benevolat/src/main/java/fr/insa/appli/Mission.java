@@ -2,22 +2,22 @@ package fr.insa.appli;
 
 import java.util.ArrayList;
 
-public class Question { // Demande d'aide que peuvent faire les Askers
+public class Mission { // Demande d'aide que peuvent faire les Askers
 
     String description;
     Asker asker;
     Volunteer volunteer;
     int Qid;
-    static ArrayList<Question> AllQuestions = new ArrayList<>();
+    static ArrayList<Mission> allMissions = new ArrayList<>();
 
     static int questionCount = 0;
-    public Question (String description, Asker asker) {
+    public Mission(String description, Asker asker) {
         this.description = description;
         this.asker = asker;
         this.volunteer = null;
         this.Qid = questionCount;
         questionCount++;
-        AllQuestions.add(this);
+        allMissions.add(this);
     }
 
     public Asker getAsker() {
@@ -47,8 +47,8 @@ public class Question { // Demande d'aide que peuvent faire les Askers
         this.description = description;
     }
 
-    public static ArrayList<Question> getAllQuestions() {
-        return AllQuestions;
+    public static ArrayList<Mission> getAllQuestions() {
+        return allMissions;
     }
 
     @Override
