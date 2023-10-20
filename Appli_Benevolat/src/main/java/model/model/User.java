@@ -4,7 +4,7 @@ public abstract class User {
     /* Attribut */
     protected String nom;
     protected String prenom;
-    protected int Uid;
+    protected int uid;
     protected int age;
 
     protected static int userCount = 0;
@@ -15,12 +15,19 @@ public abstract class User {
     public User (String nom,String prenom,int age) {
         this.nom=nom;
         this.prenom=prenom;
-        this.Uid =userCount;
+        this.uid =userCount;
         this.age=age;
 
         this.userCount++;
     }
 
+    public User (String nom,String prenom,int age, int id) {
+        this.nom=nom;
+        this.prenom=prenom;
+        this.uid =id;
+        this.age=age;
+
+    }
 
     /* Méthode */
     public String getNom(){
@@ -36,7 +43,7 @@ public abstract class User {
     }
 
     public int getUid(){
-        return this.Uid;
+        return this.uid;
     }
 
     public void setNom(String nom){
@@ -53,7 +60,7 @@ public abstract class User {
 
     @Override
     public String toString() {
-        return Uid + " | " + nom + " " + prenom + " " + age + " ans";
+        return uid + " | " + nom + " " + prenom + " " + age + " ans";
     }
 }
 

@@ -1,4 +1,5 @@
 package model.model;
+import controller.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,6 +11,16 @@ public class Main {
         v1.display_allquestion();
         a1.create_question("G soif");
         v1.display_allquestion();
+
+        Connect co = new Connect();
+        DBManager db = new DBManager(co.getConnection());
+
+        db.create_user_db();
+
+        db.add_user(a1);
+        System.out.println(db.getUser(a1.getUid()));
+
+
     }
 
 }

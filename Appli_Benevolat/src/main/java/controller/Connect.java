@@ -7,8 +7,14 @@ public class Connect {
     private static final String password = "Ohphie5u";
     //private static connection connect;
     private Connection myConnection ;
-    public void setConnection() throws SQLException {
-        myConnection = DriverManager.getConnection(jdbcURL,username,password );
+    public Connect() {
+        try {
+            myConnection = DriverManager.getConnection(jdbcURL,username,password );
+            Statement statement = myConnection.createStatement();
+            statement.execute("USE projet_gei_034");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
     public Connection getConnection() {
         return this.myConnection;
