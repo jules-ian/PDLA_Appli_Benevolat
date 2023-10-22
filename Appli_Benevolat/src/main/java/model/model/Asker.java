@@ -16,9 +16,10 @@ public class Asker extends User{
     }
 
     /*Méthode*/
-    public void create_question(String description){
-        Mission q = new Mission(description,this);
+    public Mission createMission(String description){
+        Mission q = new Mission(description,this.uid);
         this.myMissions.add(q);
+        return q;
     }
 
 }

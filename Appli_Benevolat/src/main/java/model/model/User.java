@@ -7,7 +7,7 @@ public abstract class User {
     protected int uid;
     protected int age;
 
-    protected static int userCount = 0;
+    protected static int userCount = 1;
 
 
     /*Constructeur*/

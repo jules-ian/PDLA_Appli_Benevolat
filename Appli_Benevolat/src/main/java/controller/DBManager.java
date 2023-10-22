@@ -12,7 +12,33 @@ public class DBManager {
         this.connection = connection;
     }
 
+    public void remove_user_db(){
+        try {
+            Statement statement = this.connection.createStatement();
+            String removeTableSQL = "DROP TABLE users";
+            statement.executeUpdate(removeTableSQL);
+            System.out.println("Table users supprimée avec succès.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void remove_mission_db(){
+        try {
+            Statement statement = this.connection.createStatement();
+            String removeTableSQL = "DROP TABLE missions";
+            statement.executeUpdate(removeTableSQL);
+            System.out.println("Table missions supprimée avec succès.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void reset_db(){
+            remove_mission_db();
+            remove_user_db();
+
+    }
     public void create_user_db(){ // DB avec tous les utilisateurs => champ type pour identifier Asker, Volunteer, Admin
         try {
             Statement statement = this.connection.createStatement();
@@ -35,8 +61,10 @@ public class DBManager {
             String createTableSQL = "CREATE TABLE missions ("
                     + "id INT PRIMARY KEY,"
                     + "description VARCHAR(255) NOT NULL,"
-                    + "askerID INT FOREIGN KEY NOT NULL,"
-                    + "volunteerID INT FOREIGN KEY,";
+                    + "askerID INT NOT NULL,"
+                    + "volunteerID INT DEFAULT 0,"
+                    + "FOREIGN KEY (askerID) REFERENCES users(id) ON DELETE CASCADE,"
+                    + "FOREIGN KEY (volunteerID) REFERENCES users(id))"; //ON DELETE SET DEFAULT
             statement.executeUpdate(createTableSQL);
             System.out.println("Table missions créée avec succès.");
         } catch (SQLException e) {
@@ -44,7 +72,7 @@ public class DBManager {
         }
     }
 
-    public void add_user(User user) {
+    public void addUser(User user) {
         //private Connection connect ;
 
         //TODO: Mettre tout les attributs de asker avec les get
@@ -63,8 +91,47 @@ public class DBManager {
         }
     }
 
-    //public ArrayList<Mission> getAs
+    public void addMission(Mission mission) {
+        //private Connection connect ;
 
+        //TODO: Mettre tout les attributs de asker avec les get
+        String insertQuery = "INSERT INTO missions (id,description,askerID,volunteerID) VALUES (?,?,?,?)";
+        try (PreparedStatement preparedStatement = this.connection.prepareStatement(insertQuery)) {
+            preparedStatement.setInt(1, mission.getMid());
+            preparedStatement.setString(2, mission.getDescription());
+            preparedStatement.setInt(3, mission.getAskerID());
+            preparedStatement.setInt(4, mission.getVolunteerID());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+    }
+
+
+    public Mission getMission(int id){
+        String getQuery = "SELECT * FROM missions WHERE id = ?";
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
+            preparedStatement.setInt(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int Mid = resultSet.getInt("id");
+                String desc = resultSet.getString("description");
+                int Aid = resultSet.getInt("askerID");
+                int Vid = resultSet.getInt("volunteerID");
+
+                return new Mission(desc, Aid, Vid, Mid);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+
+        return null;
+    }
 
     public User getUser(int id){
         String getQuery = "SELECT * FROM users WHERE id = ?";
@@ -93,5 +160,29 @@ public class DBManager {
         }
 
         return null;
+    }
+
+    public ArrayList<Mission> get_missions_of_asker(int id){
+        String getQuery = "SELECT * FROM missions WHERE askerID = ?";
+        ArrayList<Mission> result = new ArrayList<>();
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
+            preparedStatement.setInt(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                int Mid = resultSet.getInt("id");
+                String desc = resultSet.getString("description");
+                int Aid = resultSet.getInt("askerID");
+                int Vid = resultSet.getInt("volunteerID");
+
+                 result.add(new Mission(desc, Aid, Vid, Mid));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+
+        return result;
     }
 }

@@ -15,7 +15,7 @@ public class Volunteer extends User{
         super(nom, prenom, age, uid);
         this.myMissions = new ArrayList<>();
     }
-    public void display_allquestion() {
+    public void display_all_question() {
         ArrayList<Mission> missions = Mission.getAllQuestions();
         for (Mission mission : missions) {
             System.out.println(mission);
