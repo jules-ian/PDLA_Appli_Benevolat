@@ -8,28 +8,67 @@ import javax.swing.*;
 public class GUI {
 
     private static void createAndShowGUI() {
+
+        ViewManager VM = new ViewManager();
+
         // Create and set up the window.
         JFrame frame = new JFrame("Handic App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        Container Accueil = new Container();
-        Accueil.setLayout(new BorderLayout());
+        JPanel Home = VM.createView(); // première page affichée sur le GUI
+        JPanel AddItem = VM.createView(); // page pour ajouter un User ou une Mission
+        JPanel ShowDB = VM.createView(); // page pour afficher une liste de Users ou Missions
+
+        Home.setLayout(new BorderLayout());
+        AddItem.setLayout((new BoxLayout(AddItem, BoxLayout.PAGE_AXIS))); // Vertical BoxLayout
+
+
 
         JButton buttonAdd = new JButton("Add User");
-        JButton buttonView = new JButton("View DataBase");
-        JLabel Title = new JLabel("Welcome to Handic App !", JLabel.CENTER);
+        JButton buttonViewDB = new JButton("View DataBase");
 
-        JPanel panel = new JPanel(new FlowLayout());
+        JButton buttonAsker = new JButton("Asker");
+        JButton buttonVolunteer = new JButton("Volunteer");
+        JButton buttonMission = new JButton("Mission");
 
-        panel.add(buttonAdd);
-        panel.add(buttonView);
-
-
-        Accueil.add(Title, BorderLayout.PAGE_START);
-        Accueil.add(panel, BorderLayout.CENTER);
+        JButton buttonReturn = new JButton("Return");
 
 
-        frame.setContentPane(Accueil);
+        JLabel HomeTitle = new JLabel("Welcome to Handic App !", JLabel.CENTER);
+        JLabel AddItemTitle = new JLabel("Here you can add an item to the DB", JLabel.CENTER);
+
+
+        JPanel HomeButtons = new JPanel(new FlowLayout());
+        JPanel AddButtons = new JPanel(new FlowLayout());
+
+
+        AddButtons.add(buttonAsker);
+        AddButtons.add(buttonVolunteer);
+        AddButtons.add(buttonMission);
+
+        HomeButtons.add(buttonAdd);
+        HomeButtons.add(buttonViewDB);
+
+
+        Home.add(HomeTitle, BorderLayout.PAGE_START);
+        Home.add(HomeButtons, BorderLayout.CENTER);
+
+        AddItem.add(AddItemTitle);
+        AddItem.add(AddButtons);
+        AddItem.add(Box.createRigidArea(new Dimension(0, 50)));
+        AddItem.add(buttonReturn);
+
+
+
+        VM.setView(frame, Home);
+
+        ChangeView ShowHome = new ChangeView(frame, VM, Home);
+        ChangeView ShowAddItem = new ChangeView(frame, VM, AddItem);
+
+        buttonAdd.addActionListener(ShowAddItem);
+        buttonReturn.addActionListener(ShowHome);
+
+
 
         //CounterComponent textField = new CounterComponent();
 
@@ -50,7 +89,7 @@ public class GUI {
         //frame.getContentPane().add(Label2, BorderLayout.PAGE_END);
 */
         // make window's dimension fit its content
-        frame.pack();
+        frame.setSize(500, 300);
         // Display the window.
         frame.setVisible(true);
     }
@@ -67,18 +106,19 @@ public class GUI {
     }
 
     public static class ChangeView implements ActionListener {
-        private Container View;
+        private JPanel View;
+        private ViewManager VM;
+        private JFrame frame;
 
-        public ChangeView(Container View) {
+        public ChangeView(JFrame frame, ViewManager VM, JPanel View) {
             this.View = View;
+            this.VM = VM;
+            this.frame = frame;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            //TODO:Mettre une liste de view en attribut eu GUI et créer la fonction ci-dessous.
-            set_all_views_invisible()
-            View.setVisible(true);
-
+            VM.setView(frame, View);
         }
 
     }
