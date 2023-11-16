@@ -23,9 +23,14 @@ public class ViewManager {
         }
     }
 
-    public void setView(JFrame frame, JPanel v){ // Affiche la vue passée en argument
+    public void set_view_of_frame(JFrame frame, JPanel v){ // Affiche la vue passée en argument
         set_all_views_invisible();
         frame.setContentPane(v);
+        setVisible(v);
+    }
+
+    public void setView(JPanel v){ // Affiche la vue passée en argument
+        set_all_views_invisible();
         setVisible(v);
     }
     public void setVisible(JPanel c){

@@ -9,19 +9,37 @@ public class GUI {
 
     private static void createAndShowGUI() {
 
-        ViewManager VM = new ViewManager();
+        ViewManager MainVM = new ViewManager();
+        ViewManager FormVM = new ViewManager();
 
         // Create and set up the window.
         JFrame frame = new JFrame("Handic App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel Home = VM.createView(); // première page affichée sur le GUI
-        JPanel AddItem = VM.createView(); // page pour ajouter un User ou une Mission
-        JPanel ShowDB = VM.createView(); // page pour afficher une liste de Users ou Missions
+        JPanel Home = MainVM.createView(); // première page affichée sur le GUI
+        JPanel AddItem = MainVM.createView(); // page pour ajouter un User ou une Mission
+        JPanel ShowDB = MainVM.createView(); // page pour afficher une liste de Users ou Missions
+
+        JPanel AskerForm = FormVM.createView();
+        JPanel VolunteerForm = FormVM.createView();
+        JPanel MissionForm = FormVM.createView();
+
+        AskerForm.setLayout(new GridLayout(0, 2));
+        JLabel surname = new JLabel("Nom :");
+        JTextField surnameField = new JTextField(20);
+        JLabel name = new JLabel("Prenom :");
+        JTextField nameField = new JTextField(20);
+        JLabel age = new JLabel("Age :");
+        JTextField ageField = new JTextField(3);
 
         Home.setLayout(new BorderLayout());
         AddItem.setLayout((new BoxLayout(AddItem, BoxLayout.PAGE_AXIS))); // Vertical BoxLayout
-
+        AskerForm.add(surname);
+        AskerForm.add(surnameField);
+        AskerForm.add(name);
+        AskerForm.add(nameField);
+        AskerForm.add(age);
+        AskerForm.add(ageField);
 
 
         JButton buttonAdd = new JButton("Add User");
@@ -55,18 +73,29 @@ public class GUI {
 
         AddItem.add(AddItemTitle);
         AddItem.add(AddButtons);
-        AddItem.add(Box.createRigidArea(new Dimension(0, 50)));
+        //AddItem.add(Box.createRigidArea(new Dimension(0, 50)));
+        AddItem.add(AskerForm);
+        MainVM.setVisible(AskerForm);
         AddItem.add(buttonReturn);
 
 
+        //AddItem.add(AskerForm, 2);
 
-        VM.setView(frame, Home);
+        MainVM.set_view_of_frame(frame, Home);
+        FormVM.setView(AskerForm);
 
-        ChangeView ShowHome = new ChangeView(frame, VM, Home);
-        ChangeView ShowAddItem = new ChangeView(frame, VM, AddItem);
+        ChangeView ShowHome = new ChangeView(frame, MainVM, Home);
+        ChangeView ShowAddItem = new ChangeView(frame, MainVM, AddItem);
 
         buttonAdd.addActionListener(ShowAddItem);
         buttonReturn.addActionListener(ShowHome);
+        buttonAsker.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Asker Appuyé!");
+                AddItem.add(AskerForm, 2);
+            }
+        });
 
 
 
@@ -118,7 +147,7 @@ public class GUI {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            VM.setView(frame, View);
+            VM.set_view_of_frame(frame, View);
         }
 
     }

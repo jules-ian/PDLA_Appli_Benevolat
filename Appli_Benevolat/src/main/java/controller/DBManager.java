@@ -1,6 +1,5 @@
 package controller;
 import model.*;
-import model.model.*;
 
 import java.sql.*;
 import java.util.ArrayList;
