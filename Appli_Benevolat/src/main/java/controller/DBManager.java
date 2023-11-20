@@ -133,6 +133,28 @@ public class DBManager {
         return null;
     }
 
+    public Mission getAllMissions(){
+        String getQuery = "SELECT * FROM missions";
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int Mid = resultSet.getInt("id");
+                String desc = resultSet.getString("description");
+                int Aid = resultSet.getInt("askerID");
+                int Vid = resultSet.getInt("volunteerID");
+
+                return new Mission(desc, Aid, Vid, Mid);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+
+        return null;
+    }
+
     public User getUser(int id){
         String getQuery = "SELECT * FROM users WHERE id = ?";
         try {

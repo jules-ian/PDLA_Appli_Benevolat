@@ -20,82 +20,161 @@ public class GUI {
         JPanel AddItem = MainVM.createView(); // page pour ajouter un User ou une Mission
         JPanel ShowDB = MainVM.createView(); // page pour afficher une liste de Users ou Missions
 
+
+        Home.setLayout(new BorderLayout());
+        AddItem.setLayout((new BoxLayout(AddItem, BoxLayout.PAGE_AXIS))); // Vertical BoxLayout
+
         JPanel AskerForm = FormVM.createView();
         JPanel VolunteerForm = FormVM.createView();
         JPanel MissionForm = FormVM.createView();
 
+
+
+        //Forms Initialization
         AskerForm.setLayout(new GridLayout(0, 2));
-        JLabel surname = new JLabel("Nom :");
-        JTextField surnameField = new JTextField(20);
-        JLabel name = new JLabel("Prenom :");
-        JTextField nameField = new JTextField(20);
-        JLabel age = new JLabel("Age :");
-        JTextField ageField = new JTextField(3);
+        VolunteerForm.setLayout(new GridLayout(0, 2));
+        MissionForm.setLayout(new GridLayout(0, 2));
 
-        Home.setLayout(new BorderLayout());
-        AddItem.setLayout((new BoxLayout(AddItem, BoxLayout.PAGE_AXIS))); // Vertical BoxLayout
-        AskerForm.add(surname);
-        AskerForm.add(surnameField);
-        AskerForm.add(name);
-        AskerForm.add(nameField);
-        AskerForm.add(age);
-        AskerForm.add(ageField);
+        // Asker Form Creation
+        JLabel AskerSurname = new JLabel("Surname :");
+        JTextField AskerSurnameField = new JTextField(20);
+        JLabel AskerName = new JLabel("Name :");
+        JTextField AskerNameField = new JTextField(20);
+        JLabel AskerAge = new JLabel("Age :");
+        JTextField AskerAgeField = new JTextField(3);
+
+        AskerForm.add(AskerSurname);
+        AskerForm.add(AskerSurnameField);
+        AskerForm.add(AskerName);
+        AskerForm.add(AskerNameField);
+        AskerForm.add(AskerAge);
+        AskerForm.add(AskerAgeField);
+
+        // Volunteer Form Creation
+        JLabel VolunteerSurname = new JLabel("Surname :");
+        JTextField VolunteerSurnameField = new JTextField(20);
+        JLabel VolunteerName = new JLabel("Name :");
+        JTextField VolunteerNameField = new JTextField(20);
+        JLabel VolunteerAge = new JLabel("Age :");
+        JTextField VolunteerAgeField = new JTextField(3);
+
+        VolunteerForm.add(VolunteerSurname);
+        VolunteerForm.add(VolunteerSurnameField);
+        VolunteerForm.add(VolunteerName);
+        VolunteerForm.add(VolunteerNameField);
+        VolunteerForm.add(VolunteerAge);
+        VolunteerForm.add(VolunteerAgeField);
+
+        // Mission Form Creation
+        JLabel MissionDescription = new JLabel("Description : ");
+        JTextField MissionDescriptionField = new JTextField(20);
+        JLabel AskerSurnameMission = new JLabel("Surname of asker :");
+        JTextField AskerSurnameMissionField = new JTextField(20);
+        JLabel AskerMissionName = new JLabel("Name of asker :");
+        JTextField AskerMissionNameField = new JTextField(20);
+
+        MissionForm.add(MissionDescription);
+        MissionForm.add(MissionDescriptionField);
+        MissionForm.add(AskerSurnameMission);
+        MissionForm.add(AskerSurnameMissionField);
+        MissionForm.add(AskerMissionName);
+        MissionForm.add(AskerMissionNameField);
+
+        //On crée la layout de la page d'accueil
 
 
-        JButton buttonAdd = new JButton("Add User");
-        JButton buttonViewDB = new JButton("View DataBase");
 
+        // Setting up form buttons
         JButton buttonAsker = new JButton("Asker");
+        buttonAsker.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Asker Appuyé!");
+                AddItem.remove(2);
+                FormVM.setView(AskerForm);
+                AddItem.add(AskerForm, 2);
+                AddItem.revalidate();
+                AddItem.repaint();
+            }
+        });
+
+
         JButton buttonVolunteer = new JButton("Volunteer");
+        buttonVolunteer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Volunteer Appuyé!");
+                AddItem.remove(2);
+                FormVM.setView(VolunteerForm);
+                AddItem.add(VolunteerForm, 2);
+                AddItem.revalidate();
+                AddItem.repaint();
+            }
+        });
         JButton buttonMission = new JButton("Mission");
+        buttonMission.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Mission Appuyé!");
+                AddItem.remove(2);
+                FormVM.setView(MissionForm);
+                AddItem.add(MissionForm, 2);
+                AddItem.revalidate();
+                AddItem.repaint();
+            }
+        });
 
-        JButton buttonReturn = new JButton("Return");
-
-
-        JLabel HomeTitle = new JLabel("Welcome to Handic App !", JLabel.CENTER);
-        JLabel AddItemTitle = new JLabel("Here you can add an item to the DB", JLabel.CENTER);
-
-
-        JPanel HomeButtons = new JPanel(new FlowLayout());
+        //Ajouter les boutons crée au dessus au panel
         JPanel AddButtons = new JPanel(new FlowLayout());
-
-
         AddButtons.add(buttonAsker);
         AddButtons.add(buttonVolunteer);
         AddButtons.add(buttonMission);
 
-        HomeButtons.add(buttonAdd);
+
+
+
+        //On ajoute les boutons et le titre de la page d'accueil
+        JPanel HomeButtons = new JPanel(new FlowLayout());
+
+        JButton buttonAddUser = new JButton("Add User");
+        HomeButtons.add(buttonAddUser);
+
+        JButton buttonViewDB = new JButton("View DataBase");
         HomeButtons.add(buttonViewDB);
 
-
+        JLabel HomeTitle = new JLabel("Welcome to Handic App !", JLabel.CENTER);
         Home.add(HomeTitle, BorderLayout.PAGE_START);
+
         Home.add(HomeButtons, BorderLayout.CENTER);
 
+        JLabel AddItemTitle = new JLabel("Here you can add an item to the DB", JLabel.CENTER);
         AddItem.add(AddItemTitle);
         AddItem.add(AddButtons);
-        //AddItem.add(Box.createRigidArea(new Dimension(0, 50)));
-        AddItem.add(AskerForm);
-        MainVM.setVisible(AskerForm);
-        AddItem.add(buttonReturn);
+        AddItem.add(Box.createRigidArea(new Dimension(0, 50)));
+
+
+        JPanel BottomButtons = new JPanel(new FlowLayout());
+
+        JButton buttonReturn = new JButton("Return");
+        BottomButtons.add(buttonReturn);
+
+        JButton buttonAdd = new JButton("Add");
+        buttonAdd.setBackground(new Color(0, 255, 0));
+        BottomButtons.add(buttonAdd);
+
+        AddItem.add(BottomButtons);
 
 
         //AddItem.add(AskerForm, 2);
 
         MainVM.set_view_of_frame(frame, Home);
-        FormVM.setView(AskerForm);
 
         ChangeView ShowHome = new ChangeView(frame, MainVM, Home);
         ChangeView ShowAddItem = new ChangeView(frame, MainVM, AddItem);
 
-        buttonAdd.addActionListener(ShowAddItem);
+        buttonAddUser.addActionListener(ShowAddItem);
         buttonReturn.addActionListener(ShowHome);
-        buttonAsker.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Asker Appuyé!");
-                AddItem.add(AskerForm, 2);
-            }
-        });
+
 
 
 
@@ -107,7 +186,7 @@ public class GUI {
         CounterComponent counter = new CounterComponent();
 
         buttonSub.addActionListener(new PrintSO(textField,2));
-        buttonAdd.addActionListener(new PrintSO(textField,1));
+        buttonAddUser.addActionListener(new PrintSO(textField,1));
         buttonReset.addActionListener(new PrintSO(textField, 3));
 
 
@@ -151,7 +230,6 @@ public class GUI {
         }
 
     }
-
 
 
 }
