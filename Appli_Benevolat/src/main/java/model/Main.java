@@ -20,17 +20,17 @@ public class Main {
 
         System.out.println("Avant reset DB");
 
-        db.reset_db();
+        db.reset_db(); //TODO:Handle exception lorsque DB déjà reset avant
 
-
+        db.create_user_db();
+        db.create_mission_db();
 
         System.out.println("Gui starting");
         GUI.start(db);
         System.out.println("Gui started");
 
 
-        db.create_user_db();
-        db.create_mission_db();
+
 
         db.addUser(admin);
 
@@ -46,7 +46,7 @@ public class Main {
         System.out.println("affichage de m2: " + db.getMission(m2.getMid()));
         System.out.println("affichage des missions de a1 : \n" + db.get_missions_of_asker(a1.getUid()));
 
-        db.reset_db();
+        //db.reset_db();
 
     }
 

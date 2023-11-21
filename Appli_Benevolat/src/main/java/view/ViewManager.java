@@ -19,7 +19,7 @@ public class ViewManager {
         v.setVisible(false);
         return v;
     }
-    public JScrollPane createScrollView(String[] data) {
+    public JScrollPane createScrollView(DefaultListModel<String> data) {
         JList<String> liste_a_remplir = new JList<>(data);
         JScrollPane v = new JScrollPane(liste_a_remplir);
         ViewList.add(v);

@@ -135,7 +135,7 @@ public class DBManager {
 
     public ArrayList<Mission> getAllMissions(){
         String getQuery = "SELECT * FROM missions";
-        ArrayList<Mission> Qresult = null;
+        ArrayList<Mission> Qresult = new ArrayList<>();
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
 

@@ -9,6 +9,7 @@ import model.Volunteer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.*;
 
 public class GUI {
@@ -37,17 +38,14 @@ public class GUI {
         JPanel MissionForm = FormVM.createPanelView();
 
 
-        //(eng) (liste déroulante pour) show DB
-        String[] data = {"je suis la première mission","je suis la deuxième mission"};
-        JScrollPane scrollPane = ShowVM.createScrollView(data);
+
 
         //Forms Initialization
         AskerForm.setLayout(new GridLayout(0, 2));
         VolunteerForm.setLayout(new GridLayout(0, 2));
         MissionForm.setLayout(new GridLayout(0, 2));
 
-        //ScrollPane init
-        scrollPane.setLayout(new ScrollPaneLayout());
+
 
 
 
@@ -116,12 +114,44 @@ public class GUI {
         buttonMission.addActionListener(new ChangeForm(MissionForm, FormVM, AddItem));
 
         //Buttons for search
+
+
         JButton buttonMissionShow = new JButton("Mission");
-        buttonMissionShow.addActionListener(new ChangeForm(scrollPane, ShowVM, ShowDB));
+        //buttonMissionShow.addActionListener(new ChangeForm(scrollPane, ShowVM, ShowDB));
+        //String[] data = {"je suis la première mission","je suis la deuxième mission"};
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        JScrollPane scrollPane = ShowVM.createScrollView(listModel);
+        scrollPane.setLayout(new ScrollPaneLayout());
+
+        buttonMissionShow.addActionListener(e -> {
+
+            //(eng) (liste déroulante pour) show DB
+            listModel.clear();
+            ArrayList<Mission> missions = DBM.getAllMissions();
+            for (Mission mission : missions )
+            {
+
+                listModel.addElement(mission.toString());
+                //data[i] = String.valueOf(missions.get(i));
+                System.out.println("je suis la mission a ajouté au scroll : "+mission);
+            }
+                //Mettre à jour la data du scrollPane
+            ShowDB.remove(2);
+            ShowVM.setView(scrollPane);
+            ShowDB.add(scrollPane, 2);
+            ShowDB.revalidate();
+            ShowDB.repaint();
 
 
-        //Ajouter les boutons crée au dessus au panel
-        JPanel AddButtons = new JPanel(new FlowLayout());
+        });
+
+        //ScrollPane init
+
+
+
+
+                //Ajouter les boutons crée au dessus au panel
+                JPanel AddButtons = new JPanel(new FlowLayout());
         AddButtons.add(buttonAsker);
         AddButtons.add(buttonVolunteer);
         AddButtons.add(buttonMission);
@@ -196,7 +226,7 @@ public class GUI {
         buttonReturnCopie.addActionListener(ShowHome);
         buttonReturnCopie.addActionListener(new ChangeForm(EmptyForm, FormVM, AddItem));
 
-        buttonAdd.addActionListener(new ActionListener() {
+        buttonAdd.addActionListener(new ActionListener() { //TODO:Remplacer par lambda? pas envie de toucher à ton code au cas ou
             @Override
             public void actionPerformed(ActionEvent e) {
                 Component form = FormVM.getVisible();
@@ -210,7 +240,7 @@ public class GUI {
                     } else {
                         DBM.addUser(new Asker(AskerSurnameField.getText(), AskerNameField.getText(), Integer.parseInt(AskerAgeField.getText())));
                     }
-                    
+
                 } else if (form.equals(VolunteerForm)) {
 
                     if (VolunteerNameField.getText().isEmpty() || VolunteerAgeField.getText().isEmpty() || VolunteerSurnameField.getText().isEmpty()){
@@ -219,7 +249,7 @@ public class GUI {
                     } else {
                         DBM.addUser(new Volunteer(VolunteerSurnameField.getText(), VolunteerNameField.getText(), Integer.parseInt(VolunteerAgeField.getText())));
                     }
-                    
+
                 }else if (form.equals(MissionForm)){
 
                     if (MissionDescriptionField.getText().isEmpty() || MissionAskerNameField.getText().isEmpty() || MissionAskerSurnameField.getText().isEmpty()){
@@ -232,6 +262,8 @@ public class GUI {
                 }
             }
         });
+
+
 
         frame.setSize(500, 300);
         // Display the window.
