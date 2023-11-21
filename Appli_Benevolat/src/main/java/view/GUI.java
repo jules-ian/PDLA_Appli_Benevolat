@@ -13,7 +13,7 @@ import javax.swing.*;
 
 public class GUI {
 
-    private static void createAndShowGUI(DBManager DBM) {
+    public static void createAndShowGUI(DBManager DBM) {
 
         ViewManager MainVM = new ViewManager();
         ViewManager FormVM = new ViewManager();
@@ -226,53 +226,24 @@ public class GUI {
                         InfoText.setText("Please fill all the fields");
                         InfoText.setForeground(new Color(194, 0, 0));
                     } else {
-                        DBM.addMission(new Mission(MissionDescriptionField.getText(), 0));
+                        DBM.addMission(new Mission(MissionDescriptionField.getText(), 0)); // TODO: Trouver un moyen de récupérer l'ID
                     }
 
                 }
             }
         });
 
-
-
-
-
-        //CounterComponent textField = new CounterComponent();
-
-        //JLabel emptyLabel = new JLabel("Greetings Swinger", JLabel.CENTER);
-        //JLabel Label2 = new JLabel("The Label", JLabel.CENTER
-/*
-        CounterComponent counter = new CounterComponent();
-
-        buttonSub.addActionListener(new PrintSO(textField,2));
-        buttonAddUser.addActionListener(new PrintSO(textField,1));
-        buttonReset.addActionListener(new PrintSO(textField, 3));
-
-
-        //frame.getContentPane().add(emptyLabel, BorderLayout.CENTER);
-        frame.getContentPane().add(textField, BorderLayout.CENTER);
-        frame.getContentPane().add(panel, BorderLayout.PAGE_END);
-        //frame.getContentPane().add(button, BorderLayout.PAGE_END);
-        //frame.getContentPane().add(Label2, BorderLayout.PAGE_END);
-*/
-        // make window's dimension fit its content
         frame.setSize(500, 300);
         // Display the window.
         frame.setVisible(true);
     }
 
 
-    public static void main(String[] args) {
-        // Schedule a job for the event-dispatching thread:
-        // creating and showing this application's GUI.
-        Connect co = new Connect();
-        DBManager db = new DBManager(co.getConnection());
-        db.reset_db();
-        db.create_user_db();
-        db.create_mission_db();
+    public static void start(DBManager db) {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI(db);
+                System.out.println("Showing gui");
             }
         });
 

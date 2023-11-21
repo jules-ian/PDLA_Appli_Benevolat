@@ -133,26 +133,26 @@ public class DBManager {
         return null;
     }
 
-    public Mission getAllMissions(){ // TODO: Fonctionenn pas comme ça
+    public ArrayList<Mission> getAllMissions(){
         String getQuery = "SELECT * FROM missions";
+        ArrayList<Mission> Qresult = null;
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 int Mid = resultSet.getInt("id");
                 String desc = resultSet.getString("description");
                 int Aid = resultSet.getInt("askerID");
                 int Vid = resultSet.getInt("volunteerID");
 
-                return new Mission(desc, Aid, Vid, Mid);
+                Qresult.add(new Mission(desc, Aid, Vid, Mid));
             }
         } catch (SQLException e) {
             e.printStackTrace();
-
         }
 
-        return null;
+        return Qresult;
     }
 
     public User getUser(int id){

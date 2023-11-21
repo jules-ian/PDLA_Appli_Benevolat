@@ -1,5 +1,6 @@
 package model;
 import controller.*;
+import view.GUI;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,8 +13,21 @@ public class Main {
         Mission m2 = a1.createMission("G soif");
         v1.display_all_question();
 
+
+
         Connect co = new Connect();
         DBManager db = new DBManager(co.getConnection());
+
+        System.out.println("Avant reset DB");
+
+        db.reset_db();
+
+
+
+        System.out.println("Gui starting");
+        GUI.start(db);
+        System.out.println("Gui started");
+
 
         db.create_user_db();
         db.create_mission_db();
