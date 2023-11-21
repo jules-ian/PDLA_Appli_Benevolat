@@ -1,3 +1,3 @@
 # PDLA_Appli_Benevolat
-## t bo
-### i'm in 2
+##TODO : Setup le git comme pour l'autre projet java, pom.xml etc..
+
