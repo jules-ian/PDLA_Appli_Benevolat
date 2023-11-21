@@ -133,7 +133,7 @@ public class DBManager {
         return null;
     }
 
-    public Mission getAllMissions(){
+    public Mission getAllMissions(){ // TODO: Fonctionenn pas comme ça
         String getQuery = "SELECT * FROM missions";
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);

@@ -1,5 +1,11 @@
 package view;
 
+import controller.Connect;
+import controller.DBManager;
+import model.Asker;
+import model.Mission;
+import model.Volunteer;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,33 +13,44 @@ import javax.swing.*;
 
 public class GUI {
 
-    private static void createAndShowGUI() {
+    private static void createAndShowGUI(DBManager DBM) {
 
         ViewManager MainVM = new ViewManager();
         ViewManager FormVM = new ViewManager();
+        ViewManager ShowVM = new ViewManager();
 
         // Create and set up the window.
         JFrame frame = new JFrame("Handic App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel Home = MainVM.createView(); // première page affichée sur le GUI
-        JPanel AddItem = MainVM.createView(); // page pour ajouter un User ou une Mission
-        JPanel ShowDB = MainVM.createView(); // page pour afficher une liste de Users ou Missions
+        JPanel Home = MainVM.createPanelView(); // première page affichée sur le GUI
+        JPanel AddItem = MainVM.createPanelView(); // page pour ajouter un User ou une Mission
+        JPanel ShowDB = MainVM.createPanelView(); // page pour afficher une liste de Users ou Missions
 
 
         Home.setLayout(new BorderLayout());
         AddItem.setLayout((new BoxLayout(AddItem, BoxLayout.PAGE_AXIS))); // Vertical BoxLayout
+        ShowDB.setLayout((new BoxLayout(ShowDB, BoxLayout.PAGE_AXIS)));
 
-        JPanel AskerForm = FormVM.createView();
-        JPanel VolunteerForm = FormVM.createView();
-        JPanel MissionForm = FormVM.createView();
+        JPanel AskerForm = FormVM.createPanelView();
+        JPanel VolunteerForm = FormVM.createPanelView();
+        JPanel MissionForm = FormVM.createPanelView();
 
 
+        //(eng) (liste déroulante pour) show DB
+        String[] data = {"je suis la première mission","je suis la deuxième mission"};
+        JScrollPane scrollPane = ShowVM.createScrollView(data);
 
         //Forms Initialization
         AskerForm.setLayout(new GridLayout(0, 2));
         VolunteerForm.setLayout(new GridLayout(0, 2));
         MissionForm.setLayout(new GridLayout(0, 2));
+
+        //ScrollPane init
+        scrollPane.setLayout(new ScrollPaneLayout());
+
+
+
 
         // Asker Form Creation
         JLabel AskerSurname = new JLabel("Surname :");
@@ -49,6 +66,9 @@ public class GUI {
         AskerForm.add(AskerNameField);
         AskerForm.add(AskerAge);
         AskerForm.add(AskerAgeField);
+
+
+
 
         // Volunteer Form Creation
         JLabel VolunteerSurname = new JLabel("Surname :");
@@ -68,61 +88,37 @@ public class GUI {
         // Mission Form Creation
         JLabel MissionDescription = new JLabel("Description : ");
         JTextField MissionDescriptionField = new JTextField(20);
-        JLabel AskerSurnameMission = new JLabel("Surname of asker :");
-        JTextField AskerSurnameMissionField = new JTextField(20);
-        JLabel AskerMissionName = new JLabel("Name of asker :");
-        JTextField AskerMissionNameField = new JTextField(20);
+        JLabel MissionAskerSurname = new JLabel("Surname of asker :");
+        JTextField MissionAskerSurnameField = new JTextField(20);
+        JLabel MissionAskerName = new JLabel("Name of asker :");
+        JTextField MissionAskerNameField = new JTextField(20);
 
         MissionForm.add(MissionDescription);
         MissionForm.add(MissionDescriptionField);
-        MissionForm.add(AskerSurnameMission);
-        MissionForm.add(AskerSurnameMissionField);
-        MissionForm.add(AskerMissionName);
-        MissionForm.add(AskerMissionNameField);
+        MissionForm.add(MissionAskerSurname);
+        MissionForm.add(MissionAskerSurnameField);
+        MissionForm.add(MissionAskerName);
+        MissionForm.add(MissionAskerNameField);
+
+
 
         //On crée la layout de la page d'accueil
 
 
 
         // Setting up form buttons
+        //Buttons for Adding
         JButton buttonAsker = new JButton("Asker");
-        buttonAsker.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Asker Appuyé!");
-                AddItem.remove(2);
-                FormVM.setView(AskerForm);
-                AddItem.add(AskerForm, 2);
-                AddItem.revalidate();
-                AddItem.repaint();
-            }
-        });
-
-
+        buttonAsker.addActionListener(new ChangeForm(AskerForm, FormVM, AddItem));
         JButton buttonVolunteer = new JButton("Volunteer");
-        buttonVolunteer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Volunteer Appuyé!");
-                AddItem.remove(2);
-                FormVM.setView(VolunteerForm);
-                AddItem.add(VolunteerForm, 2);
-                AddItem.revalidate();
-                AddItem.repaint();
-            }
-        });
+        buttonVolunteer.addActionListener(new ChangeForm(VolunteerForm, FormVM, AddItem));
         JButton buttonMission = new JButton("Mission");
-        buttonMission.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Mission Appuyé!");
-                AddItem.remove(2);
-                FormVM.setView(MissionForm);
-                AddItem.add(MissionForm, 2);
-                AddItem.revalidate();
-                AddItem.repaint();
-            }
-        });
+        buttonMission.addActionListener(new ChangeForm(MissionForm, FormVM, AddItem));
+
+        //Buttons for search
+        JButton buttonMissionShow = new JButton("Mission");
+        buttonMissionShow.addActionListener(new ChangeForm(scrollPane, ShowVM, ShowDB));
+
 
         //Ajouter les boutons crée au dessus au panel
         JPanel AddButtons = new JPanel(new FlowLayout());
@@ -130,6 +126,8 @@ public class GUI {
         AddButtons.add(buttonVolunteer);
         AddButtons.add(buttonMission);
 
+        JPanel AddbuttonsShow = new JPanel(new FlowLayout());
+        AddbuttonsShow.add(buttonMissionShow);
 
 
 
@@ -150,20 +148,38 @@ public class GUI {
         JLabel AddItemTitle = new JLabel("Here you can add an item to the DB", JLabel.CENTER);
         AddItem.add(AddItemTitle);
         AddItem.add(AddButtons);
-        AddItem.add(Box.createRigidArea(new Dimension(0, 50)));
+        //Empty Form
+        Component EmptyForm = Box.createRigidArea(new Dimension(0, 50));
+        AddItem.add(EmptyForm);
+        JLabel InfoText = new JLabel("");
+        AddItem.add(InfoText);
 
+        //for show DB :
+        JLabel ShowDBTitle = new JLabel("Here you can search an item from the DB", JLabel.CENTER);
+        ShowDB.add(ShowDBTitle);
+        ShowDB.add(AddbuttonsShow);
+        //Empty Form
+        Component EmptyFormShow = Box.createRigidArea(new Dimension(0, 50));
+        ShowDB.add(EmptyFormShow);
+        JLabel InfoTextShow = new JLabel("");
+        ShowDB.add(InfoTextShow);
 
         JPanel BottomButtons = new JPanel(new FlowLayout());
+        JPanel BottomButtonsShow = new JPanel(new FlowLayout());
 
         JButton buttonReturn = new JButton("Return");
         BottomButtons.add(buttonReturn);
+        JButton buttonReturnCopie = new JButton("Return");
+        BottomButtonsShow.add(buttonReturnCopie);
 
         JButton buttonAdd = new JButton("Add");
-        buttonAdd.setBackground(new Color(0, 255, 0));
+        buttonAdd.setBackground(new Color(109, 245, 109, 255));
         BottomButtons.add(buttonAdd);
 
-        AddItem.add(BottomButtons);
 
+
+        AddItem.add(BottomButtons);
+        ShowDB.add(BottomButtonsShow);
 
         //AddItem.add(AskerForm, 2);
 
@@ -171,9 +187,52 @@ public class GUI {
 
         ChangeView ShowHome = new ChangeView(frame, MainVM, Home);
         ChangeView ShowAddItem = new ChangeView(frame, MainVM, AddItem);
+        ChangeView ShowShowDB = new ChangeView(frame, MainVM, ShowDB );
 
         buttonAddUser.addActionListener(ShowAddItem);
+        buttonViewDB.addActionListener(ShowShowDB);
         buttonReturn.addActionListener(ShowHome);
+        buttonReturn.addActionListener(new ChangeForm(EmptyForm, FormVM, AddItem));
+        buttonReturnCopie.addActionListener(ShowHome);
+        buttonReturnCopie.addActionListener(new ChangeForm(EmptyForm, FormVM, AddItem));
+
+        buttonAdd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Component form = FormVM.getVisible();
+                if(form.equals(EmptyForm)){
+                    ; // do nothing and wait for the user to choose an option
+                } else if (form.equals(AskerForm)) {
+
+                    if (AskerNameField.getText().isEmpty() || AskerAgeField.getText().isEmpty() || AskerSurnameField.getText().isEmpty()){
+                        InfoText.setText("Please fill all the fields");
+                        InfoText.setForeground(new Color(194, 0, 0));
+                    } else {
+                        DBM.addUser(new Asker(AskerSurnameField.getText(), AskerNameField.getText(), Integer.parseInt(AskerAgeField.getText())));
+                    }
+                    
+                } else if (form.equals(VolunteerForm)) {
+
+                    if (VolunteerNameField.getText().isEmpty() || VolunteerAgeField.getText().isEmpty() || VolunteerSurnameField.getText().isEmpty()){
+                        InfoText.setText("Please fill all the fields");
+                        InfoText.setForeground(new Color(194, 0, 0));
+                    } else {
+                        DBM.addUser(new Volunteer(VolunteerSurnameField.getText(), VolunteerNameField.getText(), Integer.parseInt(VolunteerAgeField.getText())));
+                    }
+                    
+                }else if (form.equals(MissionForm)){
+
+                    if (MissionDescriptionField.getText().isEmpty() || MissionAskerNameField.getText().isEmpty() || MissionAskerSurnameField.getText().isEmpty()){
+                        InfoText.setText("Please fill all the fields");
+                        InfoText.setForeground(new Color(194, 0, 0));
+                    } else {
+                        DBM.addMission(new Mission(MissionDescriptionField.getText(), 0));
+                    }
+
+                }
+            }
+        });
+
 
 
 
@@ -206,11 +265,17 @@ public class GUI {
     public static void main(String[] args) {
         // Schedule a job for the event-dispatching thread:
         // creating and showing this application's GUI.
+        Connect co = new Connect();
+        DBManager db = new DBManager(co.getConnection());
+        db.reset_db();
+        db.create_user_db();
+        db.create_mission_db();
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                createAndShowGUI();
+                createAndShowGUI(db);
             }
         });
+
     }
 
     public static class ChangeView implements ActionListener {
@@ -227,6 +292,28 @@ public class GUI {
         @Override
         public void actionPerformed(ActionEvent e) {
             VM.set_view_of_frame(frame, View);
+        }
+
+    }
+
+    public static class ChangeForm implements ActionListener {
+        private JPanel View;
+        private ViewManager VM;
+        private Component form;
+
+        public ChangeForm(Component form, ViewManager VM, JPanel View) {
+            this.View = View;
+            this.VM = VM;
+            this.form = form;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            View.remove(2);
+            VM.setView(form);
+            View.add(form, 2);
+            View.revalidate();
+            View.repaint();
         }
 
     }

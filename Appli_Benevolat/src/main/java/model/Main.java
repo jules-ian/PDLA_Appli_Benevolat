@@ -16,9 +16,10 @@ public class Main {
         DBManager db = new DBManager(co.getConnection());
 
         db.create_user_db();
+        db.create_mission_db();
+
         db.addUser(admin);
 
-        db.create_mission_db();
 
         db.addUser(a1);
         db.addUser(v1);
