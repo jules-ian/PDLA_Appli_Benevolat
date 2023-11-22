@@ -18,14 +18,12 @@ public class Main {
         Connect co = new Connect();
         DBManager db = new DBManager(co.getConnection());
 
-        System.out.println("Avant reset DB");
 
-        db.reset_db(); //TODO:Handle exception lorsque DB déjà reset avant
+        db.reset_db();
 
         db.create_user_db();
         db.create_mission_db();
 
-        System.out.println("Gui starting");
         GUI.start(db);
         System.out.println("Gui started");
 

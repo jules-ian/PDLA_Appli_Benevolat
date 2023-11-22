@@ -19,7 +19,7 @@ public class DBManager {
             statement.executeUpdate(removeTableSQL);
             System.out.println("Table users supprimée avec succès.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Table Users inexistante");
         }
     }
 
@@ -30,14 +30,13 @@ public class DBManager {
             statement.executeUpdate(removeTableSQL);
             System.out.println("Table missions supprimée avec succès.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Table Mission inexistante");
         }
     }
 
     public void reset_db(){
             remove_mission_db();
             remove_user_db();
-
     }
     public void create_user_db(){ // DB avec tous les utilisateurs => champ type pour identifier Asker, Volunteer, Admin
         try {
