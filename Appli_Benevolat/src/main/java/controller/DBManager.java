@@ -58,7 +58,7 @@ public class DBManager {
         try {
             Statement statement = this.connection.createStatement();
             String createTableSQL = "CREATE TABLE missions ("
-                    + "id INT PRIMARY KEY,"
+                    + "id INT AUTO_INCREMENT PRIMARY KEY,"
                     + "description VARCHAR(255) NOT NULL,"
                     + "askerID INT NOT NULL,"
                     + "volunteerID INT DEFAULT 0,"
@@ -94,12 +94,11 @@ public class DBManager {
         //private Connection connect ;
 
         //TODO: Mettre tout les attributs de asker avec les get
-        String insertQuery = "INSERT INTO missions (id,description,askerID,volunteerID) VALUES (?,?,?,?)";
+        String insertQuery = "INSERT INTO missions (description,askerID,volunteerID) VALUES (?,?,?)";
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(insertQuery)) {
-            preparedStatement.setInt(1, mission.getMid());
-            preparedStatement.setString(2, mission.getDescription());
-            preparedStatement.setInt(3, mission.getAskerID());
-            preparedStatement.setInt(4, mission.getVolunteerID());
+            preparedStatement.setString(1, mission.getDescription());
+            preparedStatement.setInt(2, mission.getAskerID());
+            preparedStatement.setInt(3, mission.getVolunteerID());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {

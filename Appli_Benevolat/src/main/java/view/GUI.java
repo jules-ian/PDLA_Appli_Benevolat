@@ -16,39 +16,46 @@ public class GUI {
 
     public static void createAndShowGUI(DBManager DBM) {
 
+        final int[] UID = {-1}; // Mécanisme bizarre mais nécessaire pour modifier l'UID a l'auth
+
         ViewManager MainVM = new ViewManager();
         ViewManager FormVM = new ViewManager();
-        ViewManager ShowVM = new ViewManager();
+        ViewManager ShowVM = new ViewManager(); //TODO: La liste des Missions ne s'actualise pas lorsqu'on quitte la vue et qu'on revient
 
         // Create and set up the window.
         JFrame frame = new JFrame("Handic App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        /** Creation et initialisation des vues principales */
+        JPanel Auth = MainVM.createPanelView(); // page d'authentification
         JPanel Home = MainVM.createPanelView(); // première page affichée sur le GUI
         JPanel AddItem = MainVM.createPanelView(); // page pour ajouter un User ou une Mission
         JPanel ShowDB = MainVM.createPanelView(); // page pour afficher une liste de Users ou Missions
 
-
+        Auth.setLayout(new BorderLayout());
         Home.setLayout(new BorderLayout());
         AddItem.setLayout((new BoxLayout(AddItem, BoxLayout.PAGE_AXIS))); // Vertical BoxLayout
         ShowDB.setLayout((new BoxLayout(ShowDB, BoxLayout.PAGE_AXIS)));
 
+
+        /** Creation et initialisation des formulaires principaux */
         JPanel AskerForm = FormVM.createPanelView();
         JPanel VolunteerForm = FormVM.createPanelView();
         JPanel MissionForm = FormVM.createPanelView();
 
-
-
-
-        //Forms Initialization
         AskerForm.setLayout(new GridLayout(0, 2));
         VolunteerForm.setLayout(new GridLayout(0, 2));
         MissionForm.setLayout(new GridLayout(0, 2));
 
 
+        /** Creation des ActionListeners pour changer de vue principale */
+        ChangeView ShowAuth = new ChangeView(frame, MainVM, Auth);
+        ChangeView ShowHome = new ChangeView(frame, MainVM, Home);
+        ChangeView ShowAddItem = new ChangeView(frame, MainVM, AddItem);
+        ChangeView ShowShowDB = new ChangeView(frame, MainVM, ShowDB );
 
 
-
+        /** Creation des champs des formulaires */
 
         // Asker Form Creation
         JLabel AskerSurname = new JLabel("Surname :");
@@ -64,9 +71,6 @@ public class GUI {
         AskerForm.add(AskerNameField);
         AskerForm.add(AskerAge);
         AskerForm.add(AskerAgeField);
-
-
-
 
         // Volunteer Form Creation
         JLabel VolunteerSurname = new JLabel("Surname :");
@@ -86,17 +90,9 @@ public class GUI {
         // Mission Form Creation
         JLabel MissionDescription = new JLabel("Description : ");
         JTextField MissionDescriptionField = new JTextField(20);
-        JLabel MissionAskerSurname = new JLabel("Surname of asker :");
-        JTextField MissionAskerSurnameField = new JTextField(20);
-        JLabel MissionAskerName = new JLabel("Name of asker :");
-        JTextField MissionAskerNameField = new JTextField(20);
 
         MissionForm.add(MissionDescription);
         MissionForm.add(MissionDescriptionField);
-        MissionForm.add(MissionAskerSurname);
-        MissionForm.add(MissionAskerSurnameField);
-        MissionForm.add(MissionAskerName);
-        MissionForm.add(MissionAskerNameField);
 
 
 
@@ -159,6 +155,36 @@ public class GUI {
         JPanel AddbuttonsShow = new JPanel(new FlowLayout());
         AddbuttonsShow.add(buttonMissionShow);
 
+        /** Ajout des composants de la page d'Authentification */
+
+        JLabel AuthTitle = new JLabel("Please enter you user ID", JLabel.CENTER);
+        JTextField UserIDField = new JTextField(20);
+        JButton AuthButton = new JButton("Login");
+        JPanel padding = new JPanel();
+        padding.setLayout(new BoxLayout(padding, BoxLayout.PAGE_AXIS));
+        padding.add(Box.createRigidArea(new Dimension(0, 100)));
+        padding.add(UserIDField);
+        padding.add(Box.createRigidArea(new Dimension(0, 100)));
+        AuthButton.setBackground(new Color(60, 252, 60));
+        AuthButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                    int resp = Integer.parseInt(UserIDField.getText());
+                    if(resp >= 0){
+                        UID[0] = resp;
+                        MainVM.set_view_of_frame(frame, Home);
+                    }
+                } catch (NumberFormatException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        Auth.add(AuthTitle, BorderLayout.PAGE_START);
+        Auth.add(padding, BorderLayout.CENTER);
+        Auth.add(AuthButton, BorderLayout.PAGE_END);
 
 
         //On ajoute les boutons et le titre de la page d'accueil
@@ -174,6 +200,9 @@ public class GUI {
         Home.add(HomeTitle, BorderLayout.PAGE_START);
 
         Home.add(HomeButtons, BorderLayout.CENTER);
+        JButton HomeReturn = new JButton("Return");
+        HomeReturn.addActionListener(ShowAuth);
+        Home.add(HomeReturn, BorderLayout.PAGE_END);
 
         JLabel AddItemTitle = new JLabel("Here you can add an item to the DB", JLabel.CENTER);
         AddItem.add(AddItemTitle);
@@ -213,11 +242,8 @@ public class GUI {
 
         //AddItem.add(AskerForm, 2);
 
-        MainVM.set_view_of_frame(frame, Home);
+        MainVM.set_view_of_frame(frame, Auth);
 
-        ChangeView ShowHome = new ChangeView(frame, MainVM, Home);
-        ChangeView ShowAddItem = new ChangeView(frame, MainVM, AddItem);
-        ChangeView ShowShowDB = new ChangeView(frame, MainVM, ShowDB );
 
         buttonAddUser.addActionListener(ShowAddItem);
         buttonViewDB.addActionListener(ShowShowDB);
@@ -252,11 +278,11 @@ public class GUI {
 
                 }else if (form.equals(MissionForm)){
 
-                    if (MissionDescriptionField.getText().isEmpty() || MissionAskerNameField.getText().isEmpty() || MissionAskerSurnameField.getText().isEmpty()){
+                    if (MissionDescriptionField.getText().isEmpty()){
                         InfoText.setText("Please fill all the fields");
                         InfoText.setForeground(new Color(194, 0, 0));
                     } else {
-                        DBM.addMission(new Mission(MissionDescriptionField.getText(), 0)); // TODO: Trouver un moyen de récupérer l'ID
+                        DBM.addMission(new Mission(MissionDescriptionField.getText(), UID[0])); // TODO: Trouver un moyen de récupérer l'ID
                     }
 
                 }
