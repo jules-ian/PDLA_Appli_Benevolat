@@ -11,7 +11,7 @@ public class Main {
 
         Mission m1 = a1.createMission("G faim");
         Mission m2 = a1.createMission("G soif");
-        v1.display_all_question();
+        v1.display_all_missions();
 
 
 

@@ -2,10 +2,12 @@ package model;
 
 import java.util.ArrayList;
 
+/** An Asker is a user of the app who create missions */
 public class Asker extends User{
-    /*Attribut*/
+    /*Attribute*/
     ArrayList<Mission> myMissions;
-    /*constructeur*/
+
+    /*Constructor*/
     public Asker (String nom,String prenom,int age) {
         super(nom,prenom,age);
         this.myMissions = new ArrayList<>();
@@ -15,7 +17,7 @@ public class Asker extends User{
         this.myMissions = new ArrayList<>();
     }
 
-    /*Méthode*/
+    /*Methods*/
     public Mission createMission(String description){
         Mission q = new Mission(description,this.uid);
         this.myMissions.add(q);

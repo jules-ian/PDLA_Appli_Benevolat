@@ -1,6 +1,5 @@
 package view;
 
-import controller.Connect;
 import controller.DBManager;
 import model.Asker;
 import model.Mission;
@@ -17,45 +16,56 @@ public class GUI {
     public static void createAndShowGUI(DBManager DBM) {
 
         final int[] UID = {-1}; // Mécanisme bizarre mais nécessaire pour modifier l'UID a l'auth
+        final Color GREEN = new Color(60, 252, 60, 255);
+        final Color RED = new Color(255, 32, 32, 255);
 
         ViewManager MainVM = new ViewManager();
         ViewManager FormVM = new ViewManager();
         ViewManager ShowVM = new ViewManager(); //TODO: La liste des Missions ne s'actualise pas lorsqu'on quitte la vue et qu'on revient
+        ViewManager LabelVM = new ViewManager();
 
         // Create and set up the window.
         JFrame frame = new JFrame("Handic App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        /** Creation et initialisation des vues principales */
-        JPanel Auth = MainVM.createPanelView(); // page d'authentification
+        /** Creation and initialization of the main views */
+        JPanel Sign = MainVM.createPanelView(); // First page to be displayed to choose between signing in or signing up
+        JPanel Signup = MainVM.createPanelView(); // Signing up page
+        JPanel Signin = MainVM.createPanelView(); // Signing in page
         JPanel Home = MainVM.createPanelView(); // première page affichée sur le GUI
-        JPanel AddItem = MainVM.createPanelView(); // page pour ajouter un User ou une Mission
-        JPanel ShowDB = MainVM.createPanelView(); // page pour afficher une liste de Users ou Missions
+        JPanel AddMission = MainVM.createPanelView(); // page pour ajouter un User ou une Mission
+        JPanel ShowMissions = MainVM.createPanelView(); // page pour afficher une liste de Users ou Missions
 
-        Auth.setLayout(new BorderLayout());
+        Sign.setLayout(new BorderLayout());
+        Signup.setLayout(new BoxLayout(Signup, BoxLayout.PAGE_AXIS)); // Vertical BoxLayout
+        Signin.setLayout(new BoxLayout(Signin, BoxLayout.PAGE_AXIS));
         Home.setLayout(new BorderLayout());
-        AddItem.setLayout((new BoxLayout(AddItem, BoxLayout.PAGE_AXIS))); // Vertical BoxLayout
-        ShowDB.setLayout((new BoxLayout(ShowDB, BoxLayout.PAGE_AXIS)));
+        AddMission.setLayout((new BoxLayout(AddMission, BoxLayout.PAGE_AXIS)));
+        ShowMissions.setLayout((new BoxLayout(ShowMissions, BoxLayout.PAGE_AXIS)));
 
 
-        /** Creation et initialisation des formulaires principaux */
+        /** Creation and initialization of the forms to create a user or a mission */
         JPanel AskerForm = FormVM.createPanelView();
         JPanel VolunteerForm = FormVM.createPanelView();
-        JPanel MissionForm = FormVM.createPanelView();
+        JPanel MissionForm = new JPanel();
+        Component EmptyForm = FormVM.createComponent();
 
         AskerForm.setLayout(new GridLayout(0, 2));
         VolunteerForm.setLayout(new GridLayout(0, 2));
         MissionForm.setLayout(new GridLayout(0, 2));
+        EmptyForm.setSize(new Dimension(0, 50));
 
 
-        /** Creation des ActionListeners pour changer de vue principale */
-        ChangeView ShowAuth = new ChangeView(frame, MainVM, Auth);
+        /** Creation of ActionListeners to switch the view */
+        ChangeView ShowSign = new ChangeView(frame, MainVM, Sign);
+        ChangeView ShowSignup = new ChangeView(frame, MainVM, Signup);
+        ChangeView ShowSignin = new ChangeView(frame, MainVM, Signin);
         ChangeView ShowHome = new ChangeView(frame, MainVM, Home);
-        ChangeView ShowAddItem = new ChangeView(frame, MainVM, AddItem);
-        ChangeView ShowShowDB = new ChangeView(frame, MainVM, ShowDB );
+        ChangeView ShowAddMission = new ChangeView(frame, MainVM, AddMission);
+        ChangeView ShowShowDB = new ChangeView(frame, MainVM, ShowMissions );
 
 
-        /** Creation des champs des formulaires */
+        /** Creation of fields of the forms */
 
         // Asker Form Creation
         JLabel AskerSurname = new JLabel("Surname :");
@@ -95,25 +105,168 @@ public class GUI {
         MissionForm.add(MissionDescriptionField);
 
 
+        /** Creating buttons and labels for all the pages */
 
-        //On crée la layout de la page d'accueil
+        /** ---------------------- Signing page ------------------------ */
+
+        JLabel SignTitle = new JLabel("Welcome to Handic App !", JLabel.CENTER);
+
+        JButton buttonSignup= new JButton("Sign up");
+        buttonSignup.addActionListener(ShowSignup);
+
+        JButton buttonSignin = new JButton("Sign in");
+        //buttonSignin.setBackground(new Color(60, 252, 60));
+        buttonSignin.addActionListener(ShowSignin);
+
+        Sign.add(SignTitle, BorderLayout.PAGE_START);
+        Sign.add(buttonSignin, BorderLayout.LINE_START);
+        Sign.add(buttonSignup, BorderLayout.LINE_END);
 
 
+        /** ---------------------- Sign up page ------------------------ */
 
-        // Setting up form buttons
-        //Buttons for Adding
-        JButton buttonAsker = new JButton("Asker");
-        buttonAsker.addActionListener(new ChangeForm(AskerForm, FormVM, AddItem));
-        JButton buttonVolunteer = new JButton("Volunteer");
-        buttonVolunteer.addActionListener(new ChangeForm(VolunteerForm, FormVM, AddItem));
-        JButton buttonMission = new JButton("Mission");
-        buttonMission.addActionListener(new ChangeForm(MissionForm, FormVM, AddItem));
 
-        //Buttons for search
+        JLabel labelSignup = LabelVM.createLabel();
+        labelSignup.setText("Please choose a category of user");
+        labelSignup.setHorizontalAlignment(JLabel.CENTER);
+        JLabel labelSignupAsker = LabelVM.createLabel();
+        labelSignupAsker.setText("Creating an account as an Asker");
+        labelSignupAsker.setHorizontalAlignment(JLabel.CENTER);
+        JLabel labelSignupVolunteer = LabelVM.createLabel();
+        labelSignupVolunteer.setText("Creating an account as a Volunteer");
+        labelSignupVolunteer.setHorizontalAlignment(JLabel.CENTER);
+
+        JButton buttonSignupAsker = new JButton("Asker");
+        buttonSignupAsker.addActionListener(new ChangeLabel(labelSignupAsker, LabelVM, Signup, 1));
+        buttonSignupAsker.addActionListener(new ChangeForm(AskerForm, FormVM, Signup, 3));
+        JButton buttonSignupVolunteer = new JButton("Volunteer");
+        buttonSignupVolunteer.addActionListener(new ChangeLabel(labelSignupVolunteer, LabelVM, Signup, 1));
+        buttonSignupVolunteer.addActionListener(new ChangeForm(VolunteerForm, FormVM, Signup, 3));// TODO: Bug quand on change de form
+        JButton buttonSignupReturn = new JButton("Return");
+        buttonSignupReturn.setBackground(RED);
+        buttonSignupReturn.addActionListener(new ChangeLabel(labelSignup, LabelVM, Signup, 1));
+        buttonSignupReturn.addActionListener(new ChangeForm(EmptyForm, FormVM, Signup, 3));
+        JButton buttonConfirmSignup = new JButton("Create user");
+        buttonConfirmSignup.setBackground(GREEN);
+        //TODO: AL of buttonConfirmSignup with DB...
+
+        JPanel panelSignupButtons = new JPanel(new FlowLayout());
+        panelSignupButtons.add(buttonSignupAsker);
+        panelSignupButtons.add(buttonSignupVolunteer);
+
+        JPanel panelBottomButtons = new JPanel(new FlowLayout());
+        panelBottomButtons.add(buttonSignupReturn);
+        panelBottomButtons.add(buttonConfirmSignup);
+
+        LabelVM.setView(labelSignup);
+
+        Signup.add(labelSignup);
+        Signup.add(panelSignupButtons);
+        Signup.add(EmptyForm);
+        Signup.add(panelBottomButtons);
+
+        /** ---------------------- Sign in page ------------------------ */
+
+        JLabel AuthTitle = new JLabel("Please enter you user ID", JLabel.CENTER);
+
+        JTextField UserIDField = new JTextField(20);
+
+        JPanel padding = new JPanel();
+
+        padding.setLayout(new BoxLayout(padding, BoxLayout.PAGE_AXIS));
+        padding.add(Box.createRigidArea(new Dimension(0, 100)));
+        padding.add(UserIDField);
+        padding.add(Box.createRigidArea(new Dimension(0, 100)));
+
+        JButton buttonLogin = new JButton("Login");
+        buttonLogin.setBackground(GREEN);
+        buttonLogin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                    int resp = Integer.parseInt(UserIDField.getText());
+                    if(resp >= 0){
+                        UID[0] = resp;
+                        MainVM.set_view_of_frame(frame, Home);
+                    }
+                } catch (NumberFormatException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        JButton buttonReturnSignin = new JButton("Return");
+        buttonReturnSignin.setBackground(RED);
+        buttonReturnSignin.addActionListener(ShowSign);
+
+        JPanel SignButtons = new JPanel(new FlowLayout());
+        SignButtons.add(buttonReturnSignin);
+        SignButtons.add(buttonLogin);
+
+        Signin.add(AuthTitle);
+        Signin.add(padding);
+        Signin.add(SignButtons);
+
+        /** ---------------------- Home page ------------------------ */
+
+        JLabel HomeTitle = new JLabel("Here you can display all the Missions or create one");
+
+        JButton buttonAddMission = new JButton("Add Mission");
+        buttonAddMission.addActionListener(ShowAddMission);
+        JButton buttonViewMissions = new JButton("View Missions");
+        buttonViewMissions.addActionListener(ShowShowDB);
+        JButton HomeReturn = new JButton("Return");
+        HomeReturn.addActionListener(ShowSignin);
+
+
+        JPanel HomeButtons = new JPanel(new FlowLayout());
+        HomeButtons.add(buttonAddMission);
+        HomeButtons.add(buttonViewMissions);
+
+        Home.add(HomeTitle, BorderLayout.PAGE_START);
+        Home.add(HomeButtons, BorderLayout.CENTER);
+        Home.add(HomeReturn, BorderLayout.PAGE_END);
+
+        /** ---------------------- Create Mission page ------------------------ */
+
+        JLabel AddMissionTitle = new JLabel("Here you can add an item to the DB", JLabel.CENTER);
+
+        JLabel InfoText = new JLabel("");
+        JButton buttonAdd = new JButton("Add");
+        buttonAdd.setBackground(GREEN);
+        buttonAdd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    if (MissionDescriptionField.getText().isEmpty()){
+                        InfoText.setText("Please fill the description field");
+                        InfoText.setForeground(RED);
+                    } else {
+                        DBM.addMission(new Mission(MissionDescriptionField.getText(), UID[0]));
+                    }
+            }
+        });
+
+        JButton buttonReturnAddMission = new JButton("Return");
+        buttonReturnAddMission.setBackground(RED);
+        buttonReturnAddMission.addActionListener(ShowHome);
+
+        JPanel BottomButtons = new JPanel(new FlowLayout());
+        BottomButtons.add(buttonReturnAddMission);
+        BottomButtons.add(buttonAdd);
+
+
+        AddMission.add(AddMissionTitle);
+        AddMission.add(MissionForm);
+        AddMission.add(BottomButtons);
+        AddMission.add(InfoText);
+
+
+        /** ---------------------- Show Mission page ------------------------ */
 
 
         JButton buttonMissionShow = new JButton("Mission");
-        //buttonMissionShow.addActionListener(new ChangeForm(scrollPane, ShowVM, ShowDB));
+        //buttonMissionShow.addActionListener(new ChangeForm(scrollPane, ShowVM, ShowMissions));
         //String[] data = {"je suis la première mission","je suis la deuxième mission"};
         DefaultListModel<String> listModel = new DefaultListModel<>();
         JScrollPane scrollPane = ShowVM.createScrollView(listModel);
@@ -132,11 +285,11 @@ public class GUI {
                 System.out.println("je suis la mission a ajouté au scroll : "+mission);
             }
                 //Mettre à jour la data du scrollPane
-            ShowDB.remove(2);
+            ShowMissions.remove(2);
             ShowVM.setView(scrollPane);
-            ShowDB.add(scrollPane, 2);
-            ShowDB.revalidate();
-            ShowDB.repaint();
+            ShowMissions.add(scrollPane, 2);
+            ShowMissions.revalidate();
+            ShowMissions.repaint();
 
 
         });
@@ -146,151 +299,44 @@ public class GUI {
 
 
 
-                //Ajouter les boutons crée au dessus au panel
-                JPanel AddButtons = new JPanel(new FlowLayout());
-        AddButtons.add(buttonAsker);
-        AddButtons.add(buttonVolunteer);
-        AddButtons.add(buttonMission);
-
         JPanel AddbuttonsShow = new JPanel(new FlowLayout());
         AddbuttonsShow.add(buttonMissionShow);
 
-        /** Ajout des composants de la page d'Authentification */
-
-        JLabel AuthTitle = new JLabel("Please enter you user ID", JLabel.CENTER);
-        JTextField UserIDField = new JTextField(20);
-        JButton AuthButton = new JButton("Login");
-        JPanel padding = new JPanel();
-        padding.setLayout(new BoxLayout(padding, BoxLayout.PAGE_AXIS));
-        padding.add(Box.createRigidArea(new Dimension(0, 100)));
-        padding.add(UserIDField);
-        padding.add(Box.createRigidArea(new Dimension(0, 100)));
-        AuthButton.setBackground(new Color(60, 252, 60));
-        AuthButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                try {
-                    int resp = Integer.parseInt(UserIDField.getText());
-                    if(resp >= 0){
-                        UID[0] = resp;
-                        MainVM.set_view_of_frame(frame, Home);
-                    }
-                } catch (NumberFormatException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
-
-        Auth.add(AuthTitle, BorderLayout.PAGE_START);
-        Auth.add(padding, BorderLayout.CENTER);
-        Auth.add(AuthButton, BorderLayout.PAGE_END);
 
 
-        //On ajoute les boutons et le titre de la page d'accueil
-        JPanel HomeButtons = new JPanel(new FlowLayout());
 
-        JButton buttonAddUser = new JButton("Add User");
-        HomeButtons.add(buttonAddUser);
 
-        JButton buttonViewDB = new JButton("View DataBase");
-        HomeButtons.add(buttonViewDB);
 
-        JLabel HomeTitle = new JLabel("Welcome to Handic App !", JLabel.CENTER);
-        Home.add(HomeTitle, BorderLayout.PAGE_START);
 
-        Home.add(HomeButtons, BorderLayout.CENTER);
-        JButton HomeReturn = new JButton("Return");
-        HomeReturn.addActionListener(ShowAuth);
-        Home.add(HomeReturn, BorderLayout.PAGE_END);
-
-        JLabel AddItemTitle = new JLabel("Here you can add an item to the DB", JLabel.CENTER);
-        AddItem.add(AddItemTitle);
-        AddItem.add(AddButtons);
-        //Empty Form
-        Component EmptyForm = Box.createRigidArea(new Dimension(0, 50));
-        AddItem.add(EmptyForm);
-        JLabel InfoText = new JLabel("");
-        AddItem.add(InfoText);
 
         //for show DB :
         JLabel ShowDBTitle = new JLabel("Here you can search an item from the DB", JLabel.CENTER);
-        ShowDB.add(ShowDBTitle);
-        ShowDB.add(AddbuttonsShow);
+        ShowMissions.add(ShowDBTitle);
+        ShowMissions.add(AddbuttonsShow);
         //Empty Form
         Component EmptyFormShow = Box.createRigidArea(new Dimension(0, 50));
-        ShowDB.add(EmptyFormShow);
+        ShowMissions.add(EmptyFormShow);
         JLabel InfoTextShow = new JLabel("");
-        ShowDB.add(InfoTextShow);
+        ShowMissions.add(InfoTextShow);
 
-        JPanel BottomButtons = new JPanel(new FlowLayout());
         JPanel BottomButtonsShow = new JPanel(new FlowLayout());
 
-        JButton buttonReturn = new JButton("Return");
-        BottomButtons.add(buttonReturn);
         JButton buttonReturnCopie = new JButton("Return");
         BottomButtonsShow.add(buttonReturnCopie);
 
-        JButton buttonAdd = new JButton("Add");
-        buttonAdd.setBackground(new Color(109, 245, 109, 255));
-        BottomButtons.add(buttonAdd);
+
+        ShowMissions.add(BottomButtonsShow);
+
+        //AddMission.add(AskerForm, 2);
 
 
-
-        AddItem.add(BottomButtons);
-        ShowDB.add(BottomButtonsShow);
-
-        //AddItem.add(AskerForm, 2);
-
-        MainVM.set_view_of_frame(frame, Auth);
-
-
-        buttonAddUser.addActionListener(ShowAddItem);
-        buttonViewDB.addActionListener(ShowShowDB);
-        buttonReturn.addActionListener(ShowHome);
-        buttonReturn.addActionListener(new ChangeForm(EmptyForm, FormVM, AddItem));
         buttonReturnCopie.addActionListener(ShowHome);
-        buttonReturnCopie.addActionListener(new ChangeForm(EmptyForm, FormVM, AddItem));
-
-        buttonAdd.addActionListener(new ActionListener() { //TODO:Remplacer par lambda? pas envie de toucher à ton code au cas ou MOI NON PLUS
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Component form = FormVM.getVisible();
-                if(form.equals(EmptyForm)){
-                    ; // do nothing and wait for the user to choose an option
-                } else if (form.equals(AskerForm)) {
-
-                    if (AskerNameField.getText().isEmpty() || AskerAgeField.getText().isEmpty() || AskerSurnameField.getText().isEmpty()){
-                        InfoText.setText("Please fill all the fields");
-                        InfoText.setForeground(new Color(194, 0, 0));
-                    } else {
-                        DBM.addUser(new Asker(AskerSurnameField.getText(), AskerNameField.getText(), Integer.parseInt(AskerAgeField.getText())));
-                    }
-
-                } else if (form.equals(VolunteerForm)) {
-
-                    if (VolunteerNameField.getText().isEmpty() || VolunteerAgeField.getText().isEmpty() || VolunteerSurnameField.getText().isEmpty()){
-                        InfoText.setText("Please fill all the fields");
-                        InfoText.setForeground(new Color(194, 0, 0));
-                    } else {
-                        DBM.addUser(new Volunteer(VolunteerSurnameField.getText(), VolunteerNameField.getText(), Integer.parseInt(VolunteerAgeField.getText())));
-                    }
-
-                }else if (form.equals(MissionForm)){
-
-                    if (MissionDescriptionField.getText().isEmpty()){
-                        InfoText.setText("Please fill all the fields");
-                        InfoText.setForeground(new Color(194, 0, 0));
-                    } else {
-                        DBM.addMission(new Mission(MissionDescriptionField.getText(), UID[0])); // TODO: Trouver un moyen de récupérer l'ID
-                    }
-
-                }
-            }
-        });
 
 
 
+
+
+        MainVM.set_view_of_frame(frame, Sign);
         frame.setSize(500, 300);
         // Display the window.
         frame.setVisible(true);
@@ -307,6 +353,9 @@ public class GUI {
 
     }
 
+    /** A few ActionListeners definitions */
+
+    /** This ActionListener changes the view of the current JFrame */
     public static class ChangeView implements ActionListener {
         private JPanel View;
         private ViewManager VM;
@@ -325,22 +374,50 @@ public class GUI {
 
     }
 
+    /** This ActionListener changes the form of the current JPanel */
     public static class ChangeForm implements ActionListener {
         private JPanel View;
         private ViewManager VM;
         private Component form;
+        private int index;
 
-        public ChangeForm(Component form, ViewManager VM, JPanel View) {
+        public ChangeForm(Component form, ViewManager VM, JPanel View, int index) {
             this.View = View;
             this.VM = VM;
             this.form = form;
+            this.index = index;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            View.remove(2);
+            View.remove(this.index);
             VM.setView(form);
-            View.add(form, 2);
+            View.add(form, this.index);
+            View.revalidate();
+            View.repaint();
+        }
+
+    }
+
+    /** This ActionListener changes the label of the current JPanel */
+    public static class ChangeLabel implements ActionListener {
+        private JPanel View;
+        private ViewManager VM;
+        private Component label;
+        private int index;
+
+        public ChangeLabel(Component label, ViewManager VM, JPanel View, int index) {
+            this.View = View;
+            this.VM = VM;
+            this.label = label;
+            this.index = index;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            View.remove(this.index);
+            VM.setView(label);
+            View.add(label, this.index);
             View.revalidate();
             View.repaint();
         }

@@ -2,13 +2,14 @@ package model;
 
 import java.util.ArrayList;
 
-public class Mission { // Demande d'aide que peuvent faire les Askers
+/** The Askers can create missions to ask for help */
+public class Mission {
 
     String description;
     int askerID;
-    int volunteerID;
+    int volunteerID; // if a volunteer selected the mission
     int Mid;
-    static ArrayList<Mission> allMissions = new ArrayList<>();
+    static ArrayList<Mission> allMissions = new ArrayList<>(); // used before the database
 
     static int missionCount = 1;
     public Mission(String description, int asker) { //Constructeur de création d'une nouvelle mission
@@ -54,7 +55,7 @@ public class Mission { // Demande d'aide que peuvent faire les Askers
         this.description = description;
     }
 
-    public static ArrayList<Mission> getAllQuestions() {
+    public static ArrayList<Mission> getAllMission() {
         return allMissions;
     }
 

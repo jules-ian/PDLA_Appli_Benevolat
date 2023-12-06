@@ -4,6 +4,7 @@ import model.*;
 import java.sql.*;
 import java.util.ArrayList;
 
+/** This class contains all the SQL requests that can be made on the DB */
 public class DBManager {
 
     public Connection connection;
@@ -12,6 +13,7 @@ public class DBManager {
         this.connection = connection;
     }
 
+    /** Deletes the table users */
     public void remove_user_db(){
         try {
             Statement statement = this.connection.createStatement();
@@ -23,6 +25,7 @@ public class DBManager {
         }
     }
 
+    /** Deletes the table missions */
     public void remove_mission_db(){
         try {
             Statement statement = this.connection.createStatement();
@@ -34,10 +37,13 @@ public class DBManager {
         }
     }
 
+    /** Deletes all the tables */
     public void reset_db(){
             remove_mission_db();
             remove_user_db();
     }
+
+    /** Creates the table users */
     public void create_user_db(){ // DB avec tous les utilisateurs => champ type pour identifier Asker, Volunteer, Admin
         try {
             Statement statement = this.connection.createStatement();
@@ -54,6 +60,7 @@ public class DBManager {
         }
     }
 
+    /** Creates the table missions */
     public void create_mission_db(){ // DB avec toutes les missions
         try {
             Statement statement = this.connection.createStatement();
@@ -71,6 +78,7 @@ public class DBManager {
         }
     }
 
+    /** Adds a user to the DB */
     public void addUser(User user) {
         //private Connection connect ;
 
@@ -90,6 +98,7 @@ public class DBManager {
         }
     }
 
+    /** Adds a mission to the DB */
     public void addMission(Mission mission) {
         //private Connection connect ;
 
@@ -108,6 +117,7 @@ public class DBManager {
     }
 
 
+    /** Gets a Mission from the DB by ID*/
     public Mission getMission(int id){
         String getQuery = "SELECT * FROM missions WHERE id = ?";
         try {
@@ -131,6 +141,7 @@ public class DBManager {
         return null;
     }
 
+    /** Gets all the Missions of the DB */
     public ArrayList<Mission> getAllMissions(){
         String getQuery = "SELECT * FROM missions";
         ArrayList<Mission> Qresult = new ArrayList<>();
@@ -153,6 +164,7 @@ public class DBManager {
         return Qresult;
     }
 
+    /** Gets a User from the DB by ID*/
     public User getUser(int id){
         String getQuery = "SELECT * FROM users WHERE id = ?";
         try {
@@ -182,6 +194,7 @@ public class DBManager {
         return null;
     }
 
+    /** Gets all the Missions asked by a specific Asker */
     public ArrayList<Mission> get_missions_of_asker(int id){
         String getQuery = "SELECT * FROM missions WHERE askerID = ?";
         ArrayList<Mission> result = new ArrayList<>();

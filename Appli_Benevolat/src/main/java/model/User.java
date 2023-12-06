@@ -1,7 +1,9 @@
 package model;
 
+/** generic class to represent an user of the app */
 public abstract class User {
-    /* Attribut */
+
+    /* Attributes */
     protected String nom;
     protected String prenom;
     protected int uid;
@@ -10,7 +12,7 @@ public abstract class User {
     protected static int userCount = 1;
 
 
-    /*Constructeur*/
+    /*Constructor*/
 
     public User (String nom,String prenom,int age) {
         this.nom=nom;
@@ -29,7 +31,7 @@ public abstract class User {
 
     }
 
-    /* Méthode */
+    /* Getters and Setters */
     public String getNom(){
         return this.nom;
     }
