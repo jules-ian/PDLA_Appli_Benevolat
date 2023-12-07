@@ -48,7 +48,7 @@ public class GUI {
         JPanel AskerForm = FormVM.createPanelView();
         JPanel VolunteerForm = FormVM.createPanelView();
         JPanel MissionForm = new JPanel();
-        Component EmptyForm = FormVM.createComponent();
+        JPanel EmptyForm = FormVM.createPanelView();
 
         AskerForm.setLayout(new GridLayout(0, 2));
         VolunteerForm.setLayout(new GridLayout(0, 2));
@@ -137,15 +137,16 @@ public class GUI {
         labelSignupVolunteer.setHorizontalAlignment(JLabel.CENTER);
 
         JButton buttonSignupAsker = new JButton("Asker");
-        buttonSignupAsker.addActionListener(new ChangeLabel(labelSignupAsker, LabelVM, Signup, 1));
-        buttonSignupAsker.addActionListener(new ChangeForm(AskerForm, FormVM, Signup, 3));
+        buttonSignupAsker.addActionListener(new ChangeLabel(labelSignupAsker, LabelVM, Signup, 0));
+        buttonSignupAsker.addActionListener(new ChangeForm(AskerForm, FormVM, Signup, 2));
         JButton buttonSignupVolunteer = new JButton("Volunteer");
-        buttonSignupVolunteer.addActionListener(new ChangeLabel(labelSignupVolunteer, LabelVM, Signup, 1));
-        buttonSignupVolunteer.addActionListener(new ChangeForm(VolunteerForm, FormVM, Signup, 3));// TODO: Bug quand on change de form
+        buttonSignupVolunteer.addActionListener(new ChangeLabel(labelSignupVolunteer, LabelVM, Signup, 0));
+        buttonSignupVolunteer.addActionListener(new ChangeForm(VolunteerForm, FormVM, Signup, 2));
         JButton buttonSignupReturn = new JButton("Return");
         buttonSignupReturn.setBackground(RED);
-        buttonSignupReturn.addActionListener(new ChangeLabel(labelSignup, LabelVM, Signup, 1));
-        buttonSignupReturn.addActionListener(new ChangeForm(EmptyForm, FormVM, Signup, 3));
+        buttonSignupReturn.addActionListener(new ChangeLabel(labelSignup, LabelVM, Signup, 0));
+        buttonSignupReturn.addActionListener(new ChangeForm(EmptyForm, FormVM, Signup, 2));
+        buttonSignupReturn.addActionListener(ShowSign);
         JButton buttonConfirmSignup = new JButton("Create user");
         buttonConfirmSignup.setBackground(GREEN);
         //TODO: AL of buttonConfirmSignup with DB...

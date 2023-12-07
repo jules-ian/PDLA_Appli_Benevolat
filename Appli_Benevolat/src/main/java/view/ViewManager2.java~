@@ -1,0 +1,53 @@
+package view;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+
+public class ViewManager2<T extends Component> {
+    private ArrayList<T> viewList;
+    private T visibleView;
+
+    public ViewManager2() {
+        this.viewList = new ArrayList<>();
+    }
+
+    public T createView(Class<T> viewType) {
+        try {
+            T view = viewType.getDeclaredConstructor().newInstance();
+            viewList.add(view);
+            view.setVisible(false);
+            return view;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void setAllViewsInvisible() {
+        for (T view : viewList) {
+            view.setVisible(false);
+        }
+    }
+
+    public void setViewOfFrame(JFrame frame, T view) {
+        setAllViewsInvisible();
+        frame.setContentPane((Component) view);
+        setVisible(view);
+        visibleView = view;
+    }
+
+    public void setView(T view) {
+        setAllViewsInvisible();
+        setVisible(view);
+        this.visibleView = view;
+    }
+
+    private void setVisible(T view) {
+        view.setVisible(true);
+    }
+
+    public T getVisible() {
+        return visibleView;
+    }
+}
