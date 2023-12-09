@@ -1,4 +1,5 @@
 package controller;
+import exceptions.UserNotFoundException;
 import model.*;
 
 import java.sql.*;
@@ -165,9 +166,8 @@ public class DBManager {
     }
 
     /** Gets a User from the DB by ID*/
-    public User getUser(int id){
+    public User getUser(int id) throws SQLException, UserNotFoundException {
         String getQuery = "SELECT * FROM users WHERE id = ?";
-        try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
             preparedStatement.setInt(1, id);
 
@@ -185,13 +185,9 @@ public class DBManager {
                     case "Admin" -> new Admin(nom, prenom, age, Uid);
                     default -> throw new RuntimeException("Unrecognised type " + type);
                 };
+            }else{
+                throw new UserNotFoundException(id);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-        }
-
-        return null;
     }
 
     /** Gets all the Missions asked by a specific Asker */

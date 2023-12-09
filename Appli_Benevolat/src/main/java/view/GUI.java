@@ -1,6 +1,7 @@
 package view;
 
 import controller.DBManager;
+import exceptions.UserNotFoundException;
 import model.Asker;
 import model.Mission;
 import model.Volunteer;
@@ -8,6 +9,7 @@ import model.Volunteer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.*;
 
@@ -114,7 +116,7 @@ public class GUI {
         JButton buttonSignup= new JButton("Sign up");
         buttonSignup.addActionListener(ShowSignup);
 
-        JButton buttonSignin = new JButton("Sign in");
+        JButton buttonSignin = new JButton("Log in");
         //buttonSignin.setBackground(new Color(60, 252, 60));
         buttonSignin.addActionListener(ShowSignin);
 
@@ -135,6 +137,8 @@ public class GUI {
         JLabel labelSignupVolunteer = LabelVM.createLabel();
         labelSignupVolunteer.setText("Creating an account as a Volunteer");
         labelSignupVolunteer.setHorizontalAlignment(JLabel.CENTER);
+        JLabel labelInfoSignup = new JLabel("");
+        labelInfoSignup.setForeground(RED);
 
         JButton buttonSignupAsker = new JButton("Asker");
         buttonSignupAsker.addActionListener(new ChangeLabel(labelSignupAsker, LabelVM, Signup, 0));
@@ -147,9 +151,28 @@ public class GUI {
         buttonSignupReturn.addActionListener(new ChangeLabel(labelSignup, LabelVM, Signup, 0));
         buttonSignupReturn.addActionListener(new ChangeForm(EmptyForm, FormVM, Signup, 2));
         buttonSignupReturn.addActionListener(ShowSign);
+        buttonSignupReturn.addActionListener(e -> {labelInfoSignup.setText("");});
         JButton buttonConfirmSignup = new JButton("Create user");
         buttonConfirmSignup.setBackground(GREEN);
-        //TODO: AL of buttonConfirmSignup with DB...
+        buttonConfirmSignup.addActionListener(e -> {
+            Component form = FormVM.getVisible();
+            if(form.equals(EmptyForm)){
+                ; // do nothing and wait for the user to choose an option
+                labelInfoSignup.setText("Please choose what type of user you are");
+            } else if (form.equals(AskerForm)) {
+                if (AskerNameField.getText().isEmpty() || AskerAgeField.getText().isEmpty() || AskerSurnameField.getText().isEmpty()) {
+                    labelInfoSignup.setText("Please fill all the fields");
+                } else {
+                    DBM.addUser(new Asker(AskerNameField.getText(), AskerSurnameField.getText(), Integer.parseInt(AskerAgeField.getText())));
+                }
+            }else if (form.equals(VolunteerForm)) {
+                if (VolunteerNameField.getText().isEmpty() || VolunteerAgeField.getText().isEmpty() || VolunteerSurnameField.getText().isEmpty()) {
+                    labelInfoSignup.setText("Please fill all the fields");
+                } else {
+                    DBM.addUser(new Volunteer(VolunteerNameField.getText(), VolunteerSurnameField.getText(), Integer.parseInt(VolunteerAgeField.getText())));
+                }
+            }
+        });
 
         JPanel panelSignupButtons = new JPanel(new FlowLayout());
         panelSignupButtons.add(buttonSignupAsker);
@@ -160,11 +183,15 @@ public class GUI {
         panelBottomButtons.add(buttonConfirmSignup);
 
         LabelVM.setView(labelSignup);
+        FormVM.setView(EmptyForm);
 
         Signup.add(labelSignup);
         Signup.add(panelSignupButtons);
         Signup.add(EmptyForm);
+        Signup.add(labelInfoSignup);
         Signup.add(panelBottomButtons);
+
+
 
         /** ---------------------- Sign in page ------------------------ */
 
@@ -181,25 +208,29 @@ public class GUI {
 
         JButton buttonLogin = new JButton("Login");
         buttonLogin.setBackground(GREEN);
-        buttonLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                try {
-                    int resp = Integer.parseInt(UserIDField.getText());
-                    if(resp >= 0){
-                        UID[0] = resp;
-                        MainVM.set_view_of_frame(frame, Home);
-                    }
-                } catch (NumberFormatException ex) {
-                    throw new RuntimeException(ex);
-                }
+        //Checks that given ID exists
+        buttonLogin.addActionListener(e -> {
+            try {
+                int resp = Integer.parseInt(UserIDField.getText());
+                    UID[0] = resp;
+                    System.out.println(DBM.getUser(resp));
+                    MainVM.set_view_of_frame(frame, Home);
+            } catch (UserNotFoundException unf){
+                unf.printMessage();
+                AuthTitle.setText("Provided ID doesn't exists");
+                AuthTitle.setForeground(RED);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
             }
         });
 
         JButton buttonReturnSignin = new JButton("Return");
         buttonReturnSignin.setBackground(RED);
         buttonReturnSignin.addActionListener(ShowSign);
+        buttonReturnSignin.addActionListener(e -> {
+            AuthTitle.setText("Please enter you user ID");
+            AuthTitle.setForeground(Color.BLACK);
+        });
 
         JPanel SignButtons = new JPanel(new FlowLayout());
         SignButtons.add(buttonReturnSignin);
@@ -236,16 +267,13 @@ public class GUI {
         JLabel InfoText = new JLabel("");
         JButton buttonAdd = new JButton("Add");
         buttonAdd.setBackground(GREEN);
-        buttonAdd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                    if (MissionDescriptionField.getText().isEmpty()){
-                        InfoText.setText("Please fill the description field");
-                        InfoText.setForeground(RED);
-                    } else {
-                        DBM.addMission(new Mission(MissionDescriptionField.getText(), UID[0]));
-                    }
-            }
+        buttonAdd.addActionListener(e -> {
+                if (MissionDescriptionField.getText().isEmpty()){
+                    InfoText.setText("Please fill the description field");
+                    InfoText.setForeground(RED);
+                } else {
+                    DBM.addMission(new Mission(MissionDescriptionField.getText(), UID[0]));
+                }
         });
 
         JButton buttonReturnAddMission = new JButton("Return");

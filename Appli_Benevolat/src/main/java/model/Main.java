@@ -39,7 +39,7 @@ public class Main {
         db.addMission(m1);
         db.addMission(m2);
 
-        System.out.println("affichage de a1: " + db.getUser(a1.getUid()));
+        //System.out.println("affichage de a1: " + db.getUser(a1.getUid()));
         System.out.println("affichage de m1: " + db.getMission(m1.getMid()));
         System.out.println("affichage de m2: " + db.getMission(m2.getMid()));
         System.out.println("affichage des missions de a1 : \n" + db.get_missions_of_asker(a1.getUid()));
