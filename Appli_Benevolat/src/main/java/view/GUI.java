@@ -301,7 +301,24 @@ public class GUI {
         JScrollPane scrollPane = ShowVM.createScrollView(listModel);
         scrollPane.setLayout(new ScrollPaneLayout());
 
-        buttonMissionShow.addActionListener(e -> {
+
+        ActionListener showMissionActionListener = e -> {
+           // Mettez ici le code de votre ActionListener actuel
+           listModel.clear();
+           ArrayList<Mission> missions = DBM.getAllMissions();
+           for (Mission mission : missions) {
+               listModel.addElement(mission.toString());
+               System.out.println("je suis la mission a ajouté au scroll : " + mission);
+           }
+           ShowMissions.remove(2);
+           ShowVM.setView(scrollPane);
+           ShowMissions.add(scrollPane, 2);
+           ShowMissions.revalidate();
+           ShowMissions.repaint();
+       };
+        buttonMissionShow.addActionListener(showMissionActionListener);
+        buttonViewMissions.addActionListener(showMissionActionListener);
+        /*buttonMissionShow.addActionListener(e -> {
 
             //(eng) (liste déroulante pour) show DB
             listModel.clear();
@@ -321,7 +338,7 @@ public class GUI {
             ShowMissions.repaint();
 
 
-        });
+        });*/
 
         //ScrollPane init
 
