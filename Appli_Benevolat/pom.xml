@@ -23,16 +23,6 @@
         </dependency>
 
         <dependency>
-
-            <groupId>mysql</groupId>
-
-            <artifactId>mysql-connector-java</artifactId>
-
-            <version>8.0.26</version>
-
-        </dependency>
-
-        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
@@ -55,6 +45,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version> 
                 <configuration>
                     <archive>
                         <manifest>
@@ -64,6 +55,7 @@
                     </archive>
                 </configuration>
             </plugin>
+
 
             <plugin> <!-- Exclude tests annotated with @VPNRequired -->
                 <groupId>org.apache.maven.plugins</groupId>
