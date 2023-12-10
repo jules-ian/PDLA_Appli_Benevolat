@@ -2,6 +2,7 @@ package controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import annotations.VPNRequired;
 import model.Asker;
 import model.Mission;
 import model.User;
@@ -36,6 +37,7 @@ public class DBManagerTest {
     }
 
     @Test
+    @VPNRequired
     @DisplayName("Test de création et suppression de la table users")
     public void testUserTableOperations() {
         assertDoesNotThrow(() -> {
@@ -45,6 +47,7 @@ public class DBManagerTest {
     }
 
     @Test
+    @VPNRequired
     @DisplayName("Test de création et suppression de la table missions")
     public void testMissionTableOperations() {
         assertDoesNotThrow(() -> {
@@ -55,6 +58,7 @@ public class DBManagerTest {
     }
 
     @Test
+    @VPNRequired
     @DisplayName("Test d'ajout d'utilisateur à la base de données")
     public void testAddUserToDB() {
         Asker asker = new Asker("Name", "Surname", 99);
@@ -65,6 +69,7 @@ public class DBManagerTest {
     }
 
     @Test
+    @VPNRequired
     @DisplayName("Test d'ajout de mission à la base de données")
     public void testAddMissionToDB() {
         Asker asker = new Asker("Name", "Surname", 99, 5);
@@ -78,6 +83,7 @@ public class DBManagerTest {
     }
 
     @Test
+    @VPNRequired
     @DisplayName("Test de récupération de mission par ID")
     public void testGetMissionByID() {
         Asker asker = new Asker("Name", "Surname", 99, 5);
@@ -92,6 +98,7 @@ public class DBManagerTest {
     }
 
     @Test
+    @VPNRequired
     @DisplayName("Test de récupération de tous les missions")
     public void testGetAllMissions() throws SQLException {
         Asker asker = new Asker("Name", "Surname", 99, 5);
@@ -115,6 +122,7 @@ public class DBManagerTest {
     }
 
     @Test
+    @VPNRequired
     @DisplayName("Test de récupération d'utilisateur par ID")
     public void testGetUserByID() throws SQLException {
         Asker asker = new Asker("Name", "Surname", 99, 5);
@@ -124,6 +132,7 @@ public class DBManagerTest {
     }
 
     @Test
+    @VPNRequired
     @DisplayName("Test de récupération des missions d'un Asker")
     public void testGetMissionsOfAsker() throws SQLException {
         Asker asker = new Asker("Name", "Surname", 99, 5);
