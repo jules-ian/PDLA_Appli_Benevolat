@@ -1,3 +1,7 @@
 # PDLA_Appli_Benevolat
-## TODO : Setup le git comme pour l'autre projet java, pom.xml etc..
 
+### Compilation
+Pour compiler le projet, il faut se placer dans le dossier **Appli_Benevolatn** et exécuter la commande `mvn compile package`
+
+### Exécution
+Pour exécuter le projet, lancer `java -jar target/Appli_Benevolat-1.0-SNAPSHOT.jar` toujours dans le même dossier
