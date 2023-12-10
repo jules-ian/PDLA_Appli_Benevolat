@@ -1,6 +1,6 @@
 *.class
-.idea/
+Appli_Benevolat/.idea/
 *.jar
 .vscode/
 .run/
-target/
+Appli_Benevolat/target/
