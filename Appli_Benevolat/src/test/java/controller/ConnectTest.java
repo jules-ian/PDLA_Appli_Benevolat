@@ -1,6 +1,5 @@
 package controller;
 
-import annotations.VPNRequired;
 import org.junit.jupiter.api.*;
 import java.sql.*;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -18,7 +17,7 @@ public class ConnectTest {
     }
 
     @Test
-    @VPNRequired
+    @Tag("VPNRequired")
     @DisplayName("Test de connexion à la base de données")
     public void testConnection() {
         Connection connection = connect.getConnection();
@@ -26,7 +25,7 @@ public class ConnectTest {
     }
 
     @Test
-    @VPNRequired
+    @Tag("VPNRequired")
     @DisplayName("Test de déconnexion de la base de données")
     public void testDisconnection() {
         Connection connection = connect.getConnection();
