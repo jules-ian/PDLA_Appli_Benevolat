@@ -5,4 +5,5 @@ Pour compiler le projet, une fois Maven installé sur votre machine, il faut se 
 
 ### Exécution
 Pour exécuter le projet, lancer `java -jar target/Appli_Benevolat-1.0-SNAPSHOT.jar` toujours dans le même dossier
-*Pour une raison que nous ignorons, le projet ne s'exécute pas, cela à l'air d'être dû à un driver du jdbc* 
+
+*Pour une raison que nous ignorons, la connexion à la Database échoue avec cette dernière commande, cela à l'air d'être dû à un driver du jdbc. Cependant les tests JUnit passent donc la connection à la Database fonctionne. Il est également possible de lancer l'application avec une configuration IntelliJ* 
