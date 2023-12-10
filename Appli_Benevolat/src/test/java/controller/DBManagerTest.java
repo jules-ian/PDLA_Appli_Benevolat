@@ -21,7 +21,7 @@ public class DBManagerTest {
             e.printStackTrace();
         }
         DBM = new DBManager(connection);
-        DBM.reset_db();
+        DBM.resetDB();
     }
 
     @AfterEach
@@ -39,8 +39,8 @@ public class DBManagerTest {
     @DisplayName("Test de création et suppression de la table users")
     public void testUserTableOperations() {
         assertDoesNotThrow(() -> {
-            DBM.create_user_db();
-            DBM.remove_user_db();
+            DBM.createUserTable();
+            DBM.removeUserTable();
         });
     }
 
@@ -49,9 +49,9 @@ public class DBManagerTest {
     @DisplayName("Test de création et suppression de la table missions")
     public void testMissionTableOperations() {
         assertDoesNotThrow(() -> {
-            DBM.create_user_db(); //Needed for foreign key constraints
-            DBM.create_mission_db();
-            DBM.remove_mission_db();
+            DBM.createUserTable(); //Needed for foreign key constraints
+            DBM.createMissionTable();
+            DBM.removeMissionTable();
         });
     }
 
@@ -61,7 +61,7 @@ public class DBManagerTest {
     public void testAddUserToDB() {
         Asker asker = new Asker("Name", "Surname", 99);
         assertDoesNotThrow(() -> {
-            DBM.create_user_db();
+            DBM.createUserTable();
             DBM.addUser(asker);
         });
     }
@@ -73,8 +73,8 @@ public class DBManagerTest {
         Asker asker = new Asker("Name", "Surname", 99, 5);
         Mission mission = new Mission("Mission Description", asker.getUid());
         assertDoesNotThrow(() -> {
-            DBM.create_user_db();
-            DBM.create_mission_db();
+            DBM.createUserTable();
+            DBM.createMissionTable();
             DBM.addUser(asker);
             DBM.addMission(mission);
         });
@@ -87,8 +87,8 @@ public class DBManagerTest {
         Asker asker = new Asker("Name", "Surname", 99, 5);
         Mission mission = new Mission("Mission Description", asker.getUid());
         assertDoesNotThrow(() -> {
-            DBM.create_user_db();
-            DBM.create_mission_db();
+            DBM.createUserTable();
+            DBM.createMissionTable();
             DBM.addUser(asker);
             DBM.addMission(mission);
         });
@@ -102,10 +102,10 @@ public class DBManagerTest {
         Asker asker = new Asker("Name", "Surname", 99, 5);
         Mission miss1 = new Mission("Desc 1", asker.getUid(), -1, 1);
         Mission miss2 = new Mission("Desc 2", asker.getUid(), -1, 2);
-        DBM.create_user_db();
+        DBM.createUserTable();
         DBM.addUser(asker);
 
-        DBM.create_mission_db();
+        DBM.createMissionTable();
         DBM.addMission(miss1);
         DBM.addMission(miss2);
 
@@ -124,7 +124,7 @@ public class DBManagerTest {
     @DisplayName("Test de récupération d'utilisateur par ID")
     public void testGetUserByID() throws SQLException {
         Asker asker = new Asker("Name", "Surname", 99, 5);
-        DBM.create_user_db();
+        DBM.createUserTable();
         DBM.addUser(asker);
         assertDoesNotThrow(() -> DBM.getUser(asker.getUid()));
     }
@@ -139,7 +139,7 @@ public class DBManagerTest {
         DBM.addUser(asker);
         DBM.addMission(miss1);
         try {
-            ArrayList<Mission> ret = DBM.get_missions_of_asker(asker.getUid());
+            ArrayList<Mission> ret = DBM.getMissionsOfAsker(asker.getUid());
             assertEquals(ret.get(0), miss1);
         } catch (SQLException e) {
             fail("Could not get the missions of the asker");

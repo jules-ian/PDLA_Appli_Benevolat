@@ -5,9 +5,10 @@ import java.util.ArrayList;
 /** An Asker is a user of the app who create missions */
 public class Asker extends User{
     /*Attribute*/
+    @Deprecated // since we now use the DB
     ArrayList<Mission> myMissions;
 
-    /*Constructor*/
+    /*Constructors*/
     public Asker (String nom,String prenom,int age) {
         super(nom,prenom,age);
         this.myMissions = new ArrayList<>();
@@ -18,6 +19,7 @@ public class Asker extends User{
     }
 
     /*Methods*/
+    @Deprecated // since we now use the DB
     public Mission createMission(String description){
         Mission q = new Mission(description,this.uid);
         this.myMissions.add(q);

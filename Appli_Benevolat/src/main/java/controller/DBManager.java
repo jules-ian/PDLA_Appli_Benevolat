@@ -1,6 +1,8 @@
 package controller;
 import exceptions.UserNotFoundException;
 import model.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,48 +15,49 @@ public class DBManager {
     public DBManager(Connection connection){
         this.connection = connection;
     }
+    private static final Logger LOGGER = LogManager.getLogger(DBManager.class);
 
     /** Deletes the table users */
-    public void remove_user_db() throws SQLException {
+    public void removeUserTable() throws SQLException {
             Statement statement = this.connection.createStatement();
             String removeTableSQL = "DROP TABLE users";
             statement.executeUpdate(removeTableSQL);
-            System.out.println("Table users supprimée avec succès.");
+            LOGGER.info("Table users supprimée avec succès.");
     }
 
     /** Deletes the table missions */
-    public void remove_mission_db() throws SQLException {
+    public void removeMissionTable() throws SQLException {
             Statement statement = this.connection.createStatement();
             String removeTableSQL = "DROP TABLE missions";
             statement.executeUpdate(removeTableSQL);
-            System.out.println("Table missions supprimée avec succès.");
+            LOGGER.info("Table missions supprimée avec succès.");
     }
 
     /** Deletes all the tables */
-    public void reset_db(){
+    public void resetDB(){
 
         try {
-            remove_mission_db();
+            removeMissionTable();
         }catch (SQLException e) {
-            System.out.println("Could not delete mission table");
+            LOGGER.trace("Could not delete mission table");
             // Normal if tables are already deleted
         }
 
         try {
-            remove_user_db();
+            removeUserTable();
         }catch (SQLException e) {
-            System.out.println("Could not delete user table");
+            LOGGER.trace("Could not delete user table");
             // Normal if tables are already deleted
         }
     }
 
     /** Creates the tables users and missions */
     public void createTables() throws SQLException {
-        create_user_db();
-        create_mission_db();
+        createUserTable();
+        createMissionTable();
     }
     /** Creates the table users */
-    public void create_user_db() throws SQLException { // DB avec tous les utilisateurs => champ type pour identifier Asker, Volunteer, Admin
+    public void createUserTable() throws SQLException { // DB avec tous les utilisateurs => champ type pour identifier Asker, Volunteer, Admin
             Statement statement = this.connection.createStatement();
             String createTableSQL = "CREATE TABLE users ("
                     + "id INT PRIMARY KEY,"
@@ -63,28 +66,24 @@ public class DBManager {
                     + "age INT NOT NULL,"
                     + "type VARCHAR(10) NOT NULL)";
             statement.executeUpdate(createTableSQL);
-            System.out.println("Table users créée avec succès.");
+            LOGGER.info("Table users créée avec succès.");
     }
 
     /** Creates the table missions */
-    public void create_mission_db() throws SQLException { // DB avec toutes les missions
+    public void createMissionTable() throws SQLException {
             Statement statement = this.connection.createStatement();
             String createTableSQL = "CREATE TABLE missions ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY,"
                     + "description VARCHAR(255) NOT NULL,"
                     + "askerID INT NOT NULL,"
-                    //+ "volunteerID INT)";
                     + "volunteerID INT,"
                     + "FOREIGN KEY (askerID) REFERENCES users(id) ON DELETE CASCADE)";
             statement.executeUpdate(createTableSQL);
-            System.out.println("Table missions créée avec succès.");
+            LOGGER.info("Table missions créée avec succès.");
     }
 
     /** Adds a user to the DB */
     public void addUser(User user) throws SQLException {
-        //private Connection connect ;
-
-        //TODO: Mettre tout les attributs de asker avec les get
         String insertQuery = "INSERT INTO users (id,nom,prenom,age,type) VALUES (?,?,?,?,?)";
         PreparedStatement preparedStatement = this.connection.prepareStatement(insertQuery);
             preparedStatement.setInt(1, user.getUid());
@@ -98,7 +97,6 @@ public class DBManager {
 
     /** Adds a mission to the DB */
     public void addMission(Mission mission) throws SQLException {
-        //private Connection connect ;
         if(mission.getVolunteerID() == -1){
             String insertQuery = "INSERT INTO missions (description,askerID) VALUES (?,?)";
             PreparedStatement preparedStatement = this.connection.prepareStatement(insertQuery);
@@ -180,7 +178,7 @@ public class DBManager {
     }
 
     /** Gets all the Missions asked by a specific Asker */
-    public ArrayList<Mission> get_missions_of_asker(int id) throws SQLException {
+    public ArrayList<Mission> getMissionsOfAsker(int id) throws SQLException {
         String getQuery = "SELECT * FROM missions WHERE askerID = ?";
         ArrayList<Mission> result = new ArrayList<>();
             PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);

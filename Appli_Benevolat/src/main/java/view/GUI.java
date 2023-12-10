@@ -5,6 +5,8 @@ import exceptions.UserNotFoundException;
 import model.Asker;
 import model.Mission;
 import model.Volunteer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,15 +17,17 @@ import javax.swing.*;
 
 public class GUI {
 
-    public static void createAndShowGUI(DBManager DBM) {
+    private static final Logger LOGGER = LogManager.getLogger(GUI.class);
+    private static void createAndShowGUI(DBManager DBM) {
 
-        final int[] UID = {-1}; // Mécanisme bizarre mais nécessaire pour modifier l'UID a l'auth
+        final int[] UID = {-1};
         final Color GREEN = new Color(60, 252, 60, 255);
         final Color RED = new Color(255, 32, 32, 255);
 
+
         ViewManager MainVM = new ViewManager();
         ViewManager FormVM = new ViewManager();
-        ViewManager ShowVM = new ViewManager(); //TODO: La liste des Missions ne s'actualise pas lorsqu'on quitte la vue et qu'on revient
+        ViewManager ShowVM = new ViewManager();
         ViewManager LabelVM = new ViewManager();
 
         // Create and set up the window.
@@ -34,12 +38,12 @@ public class GUI {
         JPanel Sign = MainVM.createPanelView(); // First page to be displayed to choose between signing in or signing up
         JPanel Signup = MainVM.createPanelView(); // Signing up page
         JPanel Signin = MainVM.createPanelView(); // Signing in page
-        JPanel Home = MainVM.createPanelView(); // première page affichée sur le GUI
-        JPanel AddMission = MainVM.createPanelView(); // page pour ajouter un User ou une Mission
-        JPanel ShowMissions = MainVM.createPanelView(); // page pour afficher une liste de Users ou Missions
+        JPanel Home = MainVM.createPanelView(); // Home page when logged in
+        JPanel AddMission = MainVM.createPanelView(); // Page to add a new Mission
+        JPanel ShowMissions = MainVM.createPanelView(); // Page where all the available Missions are displayed
 
         Sign.setLayout(new BorderLayout());
-        Signup.setLayout(new BoxLayout(Signup, BoxLayout.PAGE_AXIS)); // Vertical BoxLayout
+        Signup.setLayout(new BoxLayout(Signup, BoxLayout.PAGE_AXIS));
         Signin.setLayout(new BoxLayout(Signin, BoxLayout.PAGE_AXIS));
         Home.setLayout(new BorderLayout());
         AddMission.setLayout((new BoxLayout(AddMission, BoxLayout.PAGE_AXIS)));
@@ -47,15 +51,15 @@ public class GUI {
 
 
         /** Creation and initialization of the forms to create a user or a mission */
-        JPanel AskerForm = FormVM.createPanelView();
-        JPanel VolunteerForm = FormVM.createPanelView();
-        JPanel MissionForm = new JPanel();
-        JPanel EmptyForm = FormVM.createPanelView();
+        JPanel askerForm = FormVM.createPanelView();
+        JPanel volunteerForm = FormVM.createPanelView();
+        JPanel missionForm = new JPanel();
+        JPanel emptyForm = FormVM.createPanelView();
 
-        AskerForm.setLayout(new GridLayout(0, 2));
-        VolunteerForm.setLayout(new GridLayout(0, 2));
-        MissionForm.setLayout(new GridLayout(0, 2));
-        EmptyForm.setSize(new Dimension(0, 50));
+        askerForm.setLayout(new GridLayout(0, 2));
+        volunteerForm.setLayout(new GridLayout(0, 2));
+        missionForm.setLayout(new GridLayout(0, 2));
+        emptyForm.setSize(new Dimension(0, 50));
 
 
         /** Creation of ActionListeners to switch the view */
@@ -70,57 +74,56 @@ public class GUI {
         /** Creation of fields of the forms */
 
         // Asker Form Creation
-        JLabel AskerSurname = new JLabel("Surname :");
-        JTextField AskerSurnameField = new JTextField(20);
-        JLabel AskerName = new JLabel("Name :");
-        JTextField AskerNameField = new JTextField(20);
-        JLabel AskerAge = new JLabel("Age :");
-        JTextField AskerAgeField = new JTextField(3);
+        JLabel askerSurname = new JLabel("Surname :");
+        JTextField askerSurnameField = new JTextField(20);
+        JLabel askerName = new JLabel("Name :");
+        JTextField askerNameField = new JTextField(20);
+        JLabel askerAge = new JLabel("Age :");
+        JTextField askerAgeField = new JTextField(3);
 
-        AskerForm.add(AskerSurname);
-        AskerForm.add(AskerSurnameField);
-        AskerForm.add(AskerName);
-        AskerForm.add(AskerNameField);
-        AskerForm.add(AskerAge);
-        AskerForm.add(AskerAgeField);
+        askerForm.add(askerSurname);
+        askerForm.add(askerSurnameField);
+        askerForm.add(askerName);
+        askerForm.add(askerNameField);
+        askerForm.add(askerAge);
+        askerForm.add(askerAgeField);
 
         // Volunteer Form Creation
-        JLabel VolunteerSurname = new JLabel("Surname :");
-        JTextField VolunteerSurnameField = new JTextField(20);
-        JLabel VolunteerName = new JLabel("Name :");
-        JTextField VolunteerNameField = new JTextField(20);
-        JLabel VolunteerAge = new JLabel("Age :");
-        JTextField VolunteerAgeField = new JTextField(3);
+        JLabel volunteerSurname = new JLabel("Surname :");
+        JTextField volunteerSurnameField = new JTextField(20);
+        JLabel volunteerName = new JLabel("Name :");
+        JTextField volunteerNameField = new JTextField(20);
+        JLabel volunteerAge = new JLabel("Age :");
+        JTextField volunteerAgeField = new JTextField(3);
 
-        VolunteerForm.add(VolunteerSurname);
-        VolunteerForm.add(VolunteerSurnameField);
-        VolunteerForm.add(VolunteerName);
-        VolunteerForm.add(VolunteerNameField);
-        VolunteerForm.add(VolunteerAge);
-        VolunteerForm.add(VolunteerAgeField);
+        volunteerForm.add(volunteerSurname);
+        volunteerForm.add(volunteerSurnameField);
+        volunteerForm.add(volunteerName);
+        volunteerForm.add(volunteerNameField);
+        volunteerForm.add(volunteerAge);
+        volunteerForm.add(volunteerAgeField);
 
         // Mission Form Creation
-        JLabel MissionDescription = new JLabel("Description : ");
-        JTextField MissionDescriptionField = new JTextField(20);
+        JLabel missionDescription = new JLabel("Description : ");
+        JTextField missionDescriptionField = new JTextField(20);
 
-        MissionForm.add(MissionDescription);
-        MissionForm.add(MissionDescriptionField);
+        missionForm.add(missionDescription);
+        missionForm.add(missionDescriptionField);
 
 
         /** Creating buttons and labels for all the pages */
 
         /** ---------------------- Signing page ------------------------ */
 
-        JLabel SignTitle = new JLabel("Welcome to Handic App !", JLabel.CENTER);
+        JLabel signTitle = new JLabel("Welcome to Handic App !", JLabel.CENTER);
 
         JButton buttonSignup= new JButton("Sign up");
         buttonSignup.addActionListener(ShowSignup);
 
         JButton buttonSignin = new JButton("Log in");
-        //buttonSignin.setBackground(new Color(60, 252, 60));
         buttonSignin.addActionListener(ShowSignin);
 
-        Sign.add(SignTitle, BorderLayout.PAGE_START);
+        Sign.add(signTitle, BorderLayout.PAGE_START);
         Sign.add(buttonSignin, BorderLayout.LINE_START);
         Sign.add(buttonSignup, BorderLayout.LINE_END);
 
@@ -142,35 +145,38 @@ public class GUI {
 
         JButton buttonSignupAsker = new JButton("Asker");
         buttonSignupAsker.addActionListener(new ChangeLabel(labelSignupAsker, LabelVM, Signup, 0));
-        buttonSignupAsker.addActionListener(new ChangeForm(AskerForm, FormVM, Signup, 2));
+        buttonSignupAsker.addActionListener(new ChangeForm(askerForm, FormVM, Signup, 2));
+
         JButton buttonSignupVolunteer = new JButton("Volunteer");
         buttonSignupVolunteer.addActionListener(new ChangeLabel(labelSignupVolunteer, LabelVM, Signup, 0));
-        buttonSignupVolunteer.addActionListener(new ChangeForm(VolunteerForm, FormVM, Signup, 2));
+        buttonSignupVolunteer.addActionListener(new ChangeForm(volunteerForm, FormVM, Signup, 2));
+
         JButton buttonSignupReturn = new JButton("Return");
         buttonSignupReturn.setBackground(RED);
         buttonSignupReturn.addActionListener(new ChangeLabel(labelSignup, LabelVM, Signup, 0));
-        buttonSignupReturn.addActionListener(new ChangeForm(EmptyForm, FormVM, Signup, 2));
+        buttonSignupReturn.addActionListener(new ChangeForm(emptyForm, FormVM, Signup, 2));
         buttonSignupReturn.addActionListener(ShowSign);
         buttonSignupReturn.addActionListener(e -> {labelInfoSignup.setText("");});
+
         JButton buttonConfirmSignup = new JButton("Create user");
         buttonConfirmSignup.setBackground(GREEN);
         buttonConfirmSignup.addActionListener(e -> {
             try {
                 Component form = FormVM.getVisible();
-                if (form.equals(EmptyForm)) {
+                if (form.equals(emptyForm)) {
                     ; // do nothing and wait for the user to choose an option
                     labelInfoSignup.setText("Please choose what type of user you are");
-                } else if (form.equals(AskerForm)) {
-                    if (AskerNameField.getText().isEmpty() || AskerAgeField.getText().isEmpty() || AskerSurnameField.getText().isEmpty()) {
+                } else if (form.equals(askerForm)) {
+                    if (askerNameField.getText().isEmpty() || askerAgeField.getText().isEmpty() || askerSurnameField.getText().isEmpty()) {
                         labelInfoSignup.setText("Please fill all the fields");
                     } else {
-                        DBM.addUser(new Asker(AskerNameField.getText(), AskerSurnameField.getText(), Integer.parseInt(AskerAgeField.getText())));
+                        DBM.addUser(new Asker(askerNameField.getText(), askerSurnameField.getText(), Integer.parseInt(askerAgeField.getText())));
                     }
-                } else if (form.equals(VolunteerForm)) {
-                    if (VolunteerNameField.getText().isEmpty() || VolunteerAgeField.getText().isEmpty() || VolunteerSurnameField.getText().isEmpty()) {
+                } else if (form.equals(volunteerForm)) {
+                    if (volunteerNameField.getText().isEmpty() || volunteerAgeField.getText().isEmpty() || volunteerSurnameField.getText().isEmpty()) {
                         labelInfoSignup.setText("Please fill all the fields");
                     } else {
-                        DBM.addUser(new Volunteer(VolunteerNameField.getText(), VolunteerSurnameField.getText(), Integer.parseInt(VolunteerAgeField.getText())));
+                        DBM.addUser(new Volunteer(volunteerNameField.getText(), volunteerSurnameField.getText(), Integer.parseInt(volunteerAgeField.getText())));
                     }
                 }
             }catch(SQLException ex){
@@ -187,11 +193,11 @@ public class GUI {
         panelBottomButtons.add(buttonConfirmSignup);
 
         LabelVM.setView(labelSignup);
-        FormVM.setView(EmptyForm);
+        FormVM.setView(emptyForm);
 
         Signup.add(labelSignup);
         Signup.add(panelSignupButtons);
-        Signup.add(EmptyForm);
+        Signup.add(emptyForm);
         Signup.add(labelInfoSignup);
         Signup.add(panelBottomButtons);
 
@@ -199,15 +205,15 @@ public class GUI {
 
         /** ---------------------- Sign in page ------------------------ */
 
-        JLabel AuthTitle = new JLabel("Please enter you user ID", JLabel.CENTER);
+        JLabel authTitle = new JLabel("Please enter you user ID", JLabel.CENTER);
 
-        JTextField UserIDField = new JTextField(20);
+        JTextField userIDField = new JTextField(20);
 
         JPanel padding = new JPanel();
 
         padding.setLayout(new BoxLayout(padding, BoxLayout.PAGE_AXIS));
         padding.add(Box.createRigidArea(new Dimension(0, 100)));
-        padding.add(UserIDField);
+        padding.add(userIDField);
         padding.add(Box.createRigidArea(new Dimension(0, 100)));
 
         JButton buttonLogin = new JButton("Login");
@@ -215,14 +221,14 @@ public class GUI {
         //Checks that given ID exists
         buttonLogin.addActionListener(e -> {
             try {
-                int resp = Integer.parseInt(UserIDField.getText());
+                int resp = Integer.parseInt(userIDField.getText());
                     UID[0] = resp;
-                    System.out.println(DBM.getUser(resp));
-                    MainVM.set_view_of_frame(frame, Home);
+                    DBM.getUser(resp);
+                    MainVM.setViewOfFrame(frame, Home);
             } catch (UserNotFoundException unf){
                 unf.printMessage();
-                AuthTitle.setText("Provided ID doesn't exists");
-                AuthTitle.setForeground(RED);
+                authTitle.setText("Provided ID doesn't exists");
+                authTitle.setForeground(RED);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -232,55 +238,55 @@ public class GUI {
         buttonReturnSignin.setBackground(RED);
         buttonReturnSignin.addActionListener(ShowSign);
         buttonReturnSignin.addActionListener(e -> {
-            AuthTitle.setText("Please enter you user ID");
-            AuthTitle.setForeground(Color.BLACK);
+            authTitle.setText("Please enter you user ID");
+            authTitle.setForeground(Color.BLACK);
         });
 
-        JPanel SignButtons = new JPanel(new FlowLayout());
-        SignButtons.add(buttonReturnSignin);
-        SignButtons.add(buttonLogin);
+        JPanel signButtons = new JPanel(new FlowLayout());
+        signButtons.add(buttonReturnSignin);
+        signButtons.add(buttonLogin);
 
-        Signin.add(AuthTitle);
+        Signin.add(authTitle);
         Signin.add(padding);
-        Signin.add(SignButtons);
+        Signin.add(signButtons);
 
         /** ---------------------- Home page ------------------------ */
 
-        JLabel HomeTitle = new JLabel("Here you can display all the Missions or create one");
+        JLabel homeTitle = new JLabel("Here you can display all the Missions or create one");
 
         JButton buttonAddMission = new JButton("Add Mission");
         buttonAddMission.addActionListener(ShowAddMission);
         JButton buttonViewMissions = new JButton("View Missions");
         buttonViewMissions.addActionListener(ShowShowDB);
-        JButton HomeReturn = new JButton("Return");
-        HomeReturn.addActionListener(ShowSignin);
+        JButton homeReturn = new JButton("Return");
+        homeReturn.addActionListener(ShowSignin);
 
 
-        JPanel HomeButtons = new JPanel(new FlowLayout());
-        HomeButtons.add(buttonAddMission);
-        HomeButtons.add(buttonViewMissions);
+        JPanel homeButtons = new JPanel(new FlowLayout());
+        homeButtons.add(buttonAddMission);
+        homeButtons.add(buttonViewMissions);
 
-        Home.add(HomeTitle, BorderLayout.PAGE_START);
-        Home.add(HomeButtons, BorderLayout.CENTER);
-        Home.add(HomeReturn, BorderLayout.PAGE_END);
+        Home.add(homeTitle, BorderLayout.PAGE_START);
+        Home.add(homeButtons, BorderLayout.CENTER);
+        Home.add(homeReturn, BorderLayout.PAGE_END);
 
         /** ---------------------- Create Mission page ------------------------ */
 
-        JLabel AddMissionTitle = new JLabel("Here you can add an item to the DB", JLabel.CENTER);
+        JLabel addMissionTitle = new JLabel("Here you can add an item to the DB", JLabel.CENTER);
 
-        JLabel InfoText = new JLabel("");
+        JLabel infoText = new JLabel("");
         JButton buttonAdd = new JButton("Add");
         buttonAdd.setBackground(GREEN);
         buttonAdd.addActionListener(e -> {
             try {
-                if (MissionDescriptionField.getText().isEmpty()) {
-                    InfoText.setText("Please fill the description field");
-                    InfoText.setForeground(RED);
+                if (missionDescriptionField.getText().isEmpty()) {
+                    infoText.setText("Please fill the description field");
+                    infoText.setForeground(RED);
                 } else {
-                    DBM.addMission(new Mission(MissionDescriptionField.getText(), UID[0]));
+                    DBM.addMission(new Mission(missionDescriptionField.getText(), UID[0]));
                 }
             }catch(SQLException ex){
-                InfoText.setText("Could not add the mission to the database");
+                infoText.setText("Could not add the mission to the database");
             }
         });
 
@@ -288,23 +294,21 @@ public class GUI {
         buttonReturnAddMission.setBackground(RED);
         buttonReturnAddMission.addActionListener(ShowHome);
 
-        JPanel BottomButtons = new JPanel(new FlowLayout());
-        BottomButtons.add(buttonReturnAddMission);
-        BottomButtons.add(buttonAdd);
+        JPanel bottomButtons = new JPanel(new FlowLayout());
+        bottomButtons.add(buttonReturnAddMission);
+        bottomButtons.add(buttonAdd);
 
 
-        AddMission.add(AddMissionTitle);
-        AddMission.add(MissionForm);
-        AddMission.add(BottomButtons);
-        AddMission.add(InfoText);
+        AddMission.add(addMissionTitle);
+        AddMission.add(missionForm);
+        AddMission.add(bottomButtons);
+        AddMission.add(infoText);
 
 
         /** ---------------------- Show Mission page ------------------------ */
 
 
         JButton buttonMissionShow = new JButton("Mission");
-        //buttonMissionShow.addActionListener(new ChangeForm(scrollPane, ShowVM, ShowMissions));
-        //String[] data = {"je suis la première mission","je suis la deuxième mission"};
         DefaultListModel<String> listModel = new DefaultListModel<>();
         JScrollPane scrollPane = ShowVM.createScrollView(listModel);
         scrollPane.setLayout(new ScrollPaneLayout());
@@ -316,7 +320,6 @@ public class GUI {
                 ArrayList<Mission> missions = DBM.getAllMissions();
                 for (Mission mission : missions) {
                     listModel.addElement(mission.toString());
-                    System.out.println("je suis la mission a ajouté au scroll : " + mission);
                 }
             }catch(SQLException ex){
                 //TODO: FAire un Label info ou on affiche l'erreur
@@ -329,35 +332,12 @@ public class GUI {
        };
         buttonMissionShow.addActionListener(showMissionActionListener);
         buttonViewMissions.addActionListener(showMissionActionListener);
-        /*buttonMissionShow.addActionListener(e -> {
-
-            //(eng) (liste déroulante pour) show DB
-            listModel.clear();
-            ArrayList<Mission> missions = DBM.getAllMissions();
-            for (Mission mission : missions )
-            {
-
-                listModel.addElement(mission.toString());
-                //data[i] = String.valueOf(missions.get(i));
-                System.out.println("je suis la mission a ajouté au scroll : "+mission);
-            }
-                //Mettre à jour la data du scrollPane
-            ShowMissions.remove(2);
-            ShowVM.setView(scrollPane);
-            ShowMissions.add(scrollPane, 2);
-            ShowMissions.revalidate();
-            ShowMissions.repaint();
-
-
-        });*/
-
-        //ScrollPane init
 
 
 
 
-        JPanel AddbuttonsShow = new JPanel(new FlowLayout());
-        AddbuttonsShow.add(buttonMissionShow);
+        JPanel addbuttonsShow = new JPanel(new FlowLayout());
+        addbuttonsShow.add(buttonMissionShow);
 
 
 
@@ -367,24 +347,23 @@ public class GUI {
 
 
         //for show DB :
-        JLabel ShowDBTitle = new JLabel("Here you can search an item from the DB", JLabel.CENTER);
-        ShowMissions.add(ShowDBTitle);
-        ShowMissions.add(AddbuttonsShow);
+        JLabel showDBTitle = new JLabel("Here you can search an item from the DB", JLabel.CENTER);
+        ShowMissions.add(showDBTitle);
+        ShowMissions.add(addbuttonsShow);
         //Empty Form
-        Component EmptyFormShow = Box.createRigidArea(new Dimension(0, 50));
-        ShowMissions.add(EmptyFormShow);
-        JLabel InfoTextShow = new JLabel("");
-        ShowMissions.add(InfoTextShow);
+        Component emptyFormShow = Box.createRigidArea(new Dimension(0, 50));
+        ShowMissions.add(emptyFormShow);
+        JLabel infoTextShow = new JLabel("");
+        ShowMissions.add(infoTextShow);
 
-        JPanel BottomButtonsShow = new JPanel(new FlowLayout());
+        JPanel bottomButtonsShow = new JPanel(new FlowLayout());
 
         JButton buttonReturnCopie = new JButton("Return");
-        BottomButtonsShow.add(buttonReturnCopie);
+        bottomButtonsShow.add(buttonReturnCopie);
 
 
-        ShowMissions.add(BottomButtonsShow);
+        ShowMissions.add(bottomButtonsShow);
 
-        //AddMission.add(AskerForm, 2);
 
 
         buttonReturnCopie.addActionListener(ShowHome);
@@ -393,7 +372,7 @@ public class GUI {
 
 
 
-        MainVM.set_view_of_frame(frame, Sign);
+        MainVM.setViewOfFrame(frame, Sign);
         frame.setSize(500, 300);
         // Display the window.
         frame.setVisible(true);
@@ -404,7 +383,7 @@ public class GUI {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI(db);
-                System.out.println("Showing gui");
+                LOGGER.info("Showing gui");
             }
         });
 
@@ -426,7 +405,7 @@ public class GUI {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            VM.set_view_of_frame(frame, View);
+            VM.setViewOfFrame(frame, View);
         }
 
     }

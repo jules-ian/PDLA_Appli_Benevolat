@@ -10,8 +10,11 @@ public class Mission {
     int askerID;
     int volunteerID; // if a volunteer selected the mission
     int Mid;
-    static ArrayList<Mission> allMissions = new ArrayList<>(); // used before the database
 
+    @Deprecated // since we now use the DB
+    static ArrayList<Mission> allMissions = new ArrayList<>();
+
+    @Deprecated // since we now use the DB
     static int missionCount = 1;
     public Mission(String description, int asker) { //Constructeur de création d'une nouvelle mission
         this.description = description;
@@ -41,6 +44,7 @@ public class Mission {
         return Mid;
     }
 
+    @Deprecated // since we now use the DB
     public static int getMissionCount() {
         return missionCount;
     }
@@ -60,6 +64,7 @@ public class Mission {
         this.description = description;
     }
 
+    @Deprecated // since we now use the DB
     public static ArrayList<Mission> getAllMission() {
         return allMissions;
     }

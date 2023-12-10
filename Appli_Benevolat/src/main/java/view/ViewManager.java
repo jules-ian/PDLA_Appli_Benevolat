@@ -48,15 +48,15 @@ public class ViewManager {
     }
 
     /** Hides all the views */
-    public void set_all_views_invisible(){
+    public void setAllViewsInvisible(){
         for(Component v : this.ViewList){
             v.setVisible(false);
         }
     }
 
     /** Displays the view in the JFrame passed as argument */
-    public void set_view_of_frame(JFrame frame, Container v){
-        set_all_views_invisible();
+    public void setViewOfFrame(JFrame frame, Container v){
+        setAllViewsInvisible();
         frame.setContentPane(v);
         setVisible(v);
         visibleView = v;
@@ -64,7 +64,7 @@ public class ViewManager {
 
     /** Displays the view passed as an argument */
     public void setView(Component v){
-        set_all_views_invisible();
+        setAllViewsInvisible();
         setVisible((Container) v);
         this.visibleView = v;
     }

@@ -16,7 +16,8 @@ public class Volunteer extends User{
         super(nom, prenom, age, uid);
         this.myMissions = new ArrayList<>();
     }
-    public void display_all_missions() {
+    @Deprecated // since we now use the DB
+    public void displayAllMissions() {
         ArrayList<Mission> missions = Mission.getAllMission();
         for (Mission mission : missions) {
             System.out.println(mission);

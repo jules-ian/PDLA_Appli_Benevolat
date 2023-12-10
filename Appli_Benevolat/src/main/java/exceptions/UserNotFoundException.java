@@ -1,5 +1,6 @@
 package exceptions;
 
+/** Thrown when the user corresponding to the given id is not found in the DB */
 public class UserNotFoundException extends Exception{
     String message;
     int id;
