@@ -155,22 +155,26 @@ public class GUI {
         JButton buttonConfirmSignup = new JButton("Create user");
         buttonConfirmSignup.setBackground(GREEN);
         buttonConfirmSignup.addActionListener(e -> {
-            Component form = FormVM.getVisible();
-            if(form.equals(EmptyForm)){
-                ; // do nothing and wait for the user to choose an option
-                labelInfoSignup.setText("Please choose what type of user you are");
-            } else if (form.equals(AskerForm)) {
-                if (AskerNameField.getText().isEmpty() || AskerAgeField.getText().isEmpty() || AskerSurnameField.getText().isEmpty()) {
-                    labelInfoSignup.setText("Please fill all the fields");
-                } else {
-                    DBM.addUser(new Asker(AskerNameField.getText(), AskerSurnameField.getText(), Integer.parseInt(AskerAgeField.getText())));
+            try {
+                Component form = FormVM.getVisible();
+                if (form.equals(EmptyForm)) {
+                    ; // do nothing and wait for the user to choose an option
+                    labelInfoSignup.setText("Please choose what type of user you are");
+                } else if (form.equals(AskerForm)) {
+                    if (AskerNameField.getText().isEmpty() || AskerAgeField.getText().isEmpty() || AskerSurnameField.getText().isEmpty()) {
+                        labelInfoSignup.setText("Please fill all the fields");
+                    } else {
+                        DBM.addUser(new Asker(AskerNameField.getText(), AskerSurnameField.getText(), Integer.parseInt(AskerAgeField.getText())));
+                    }
+                } else if (form.equals(VolunteerForm)) {
+                    if (VolunteerNameField.getText().isEmpty() || VolunteerAgeField.getText().isEmpty() || VolunteerSurnameField.getText().isEmpty()) {
+                        labelInfoSignup.setText("Please fill all the fields");
+                    } else {
+                        DBM.addUser(new Volunteer(VolunteerNameField.getText(), VolunteerSurnameField.getText(), Integer.parseInt(VolunteerAgeField.getText())));
+                    }
                 }
-            }else if (form.equals(VolunteerForm)) {
-                if (VolunteerNameField.getText().isEmpty() || VolunteerAgeField.getText().isEmpty() || VolunteerSurnameField.getText().isEmpty()) {
-                    labelInfoSignup.setText("Please fill all the fields");
-                } else {
-                    DBM.addUser(new Volunteer(VolunteerNameField.getText(), VolunteerSurnameField.getText(), Integer.parseInt(VolunteerAgeField.getText())));
-                }
+            }catch(SQLException ex){
+                labelInfoSignup.setText("Could not add user to DB");
             }
         });
 
@@ -268,12 +272,16 @@ public class GUI {
         JButton buttonAdd = new JButton("Add");
         buttonAdd.setBackground(GREEN);
         buttonAdd.addActionListener(e -> {
-                if (MissionDescriptionField.getText().isEmpty()){
+            try {
+                if (MissionDescriptionField.getText().isEmpty()) {
                     InfoText.setText("Please fill the description field");
                     InfoText.setForeground(RED);
                 } else {
                     DBM.addMission(new Mission(MissionDescriptionField.getText(), UID[0]));
                 }
+            }catch(SQLException ex){
+                InfoText.setText("Could not add the mission to the database");
+            }
         });
 
         JButton buttonReturnAddMission = new JButton("Return");
@@ -303,13 +311,16 @@ public class GUI {
 
 
         ActionListener showMissionActionListener = e -> {
-           // Mettez ici le code de votre ActionListener actuel
-           listModel.clear();
-           ArrayList<Mission> missions = DBM.getAllMissions();
-           for (Mission mission : missions) {
-               listModel.addElement(mission.toString());
-               System.out.println("je suis la mission a ajouté au scroll : " + mission);
-           }
+            try {
+                listModel.clear();
+                ArrayList<Mission> missions = DBM.getAllMissions();
+                for (Mission mission : missions) {
+                    listModel.addElement(mission.toString());
+                    System.out.println("je suis la mission a ajouté au scroll : " + mission);
+                }
+            }catch(SQLException ex){
+                //TODO: FAire un Label info ou on affiche l'erreur
+            }
            ShowMissions.remove(2);
            ShowVM.setView(scrollPane);
            ShowMissions.add(scrollPane, 2);

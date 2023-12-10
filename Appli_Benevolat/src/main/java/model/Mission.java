@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /** The Askers can create missions to ask for help */
 public class Mission {
@@ -15,7 +16,7 @@ public class Mission {
     public Mission(String description, int asker) { //Constructeur de création d'une nouvelle mission
         this.description = description;
         this.askerID = asker;
-        this.volunteerID = 0;
+        this.volunteerID = -1;
         this.Mid = missionCount;
         missionCount++;
         allMissions.add(this);
@@ -23,9 +24,13 @@ public class Mission {
 
     public Mission(String description, int asker, int volunteer, int id){ //Constructeur pour la création d'une mission récupérée dans la db
         this.description = description;
+        if(volunteer == 0){
+            this.volunteerID = -1;
+        }else{
+            this.volunteerID = volunteer;
+        }
         this.Mid = id;
         this.askerID = asker;
-        this.volunteerID = volunteer;
     }
 
     public int getAskerID() {
@@ -61,6 +66,19 @@ public class Mission {
 
     @Override
     public String toString() {
-        return  this.Mid + " : " + description + " | Asker : " + askerID;
+        return  this.Mid + " : " + description + " | Asker : " + askerID + " | Volunteer : " + volunteerID;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Mission mission = (Mission) o;
+        return askerID == mission.askerID && volunteerID == mission.volunteerID && Mid == mission.Mid && Objects.equals(description, mission.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description, askerID, volunteerID, Mid);
     }
 }

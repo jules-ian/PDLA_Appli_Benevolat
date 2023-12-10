@@ -2,6 +2,8 @@ package model;
 import controller.*;
 import view.GUI;
 
+import java.sql.SQLException;
+
 public class Main {
     public static void main(String[] args) {
 
@@ -14,21 +16,31 @@ public class Main {
         v1.display_all_missions();
 
 
-
-        Connect co = new Connect();
+        Connect co = null;
+        try {
+            co = new Connect();
+        } catch (SQLException e) {
+            System.out.println("Unable to establish connection");
+            System.exit(1);
+        }
         DBManager db = new DBManager(co.getConnection());
 
 
         db.reset_db();
-
-        db.create_user_db();
-        db.create_mission_db();
+/*
+        try {
+            db.create_user_db();
+            db.create_mission_db();
+        } catch (SQLException e) {
+            System.out.println("Unable to create the tables");
+            System.exit(1);
+        }
 
         GUI.start(db);
         System.out.println("Gui started");
 
 
-
+        /*
 
         db.addUser(admin);
 
@@ -39,13 +51,14 @@ public class Main {
         db.addMission(m1);
         db.addMission(m2);
 
+
         //System.out.println("affichage de a1: " + db.getUser(a1.getUid()));
         System.out.println("affichage de m1: " + db.getMission(m1.getMid()));
         System.out.println("affichage de m2: " + db.getMission(m2.getMid()));
         System.out.println("affichage des missions de a1 : \n" + db.get_missions_of_asker(a1.getUid()));
 
         //db.reset_db();
-
+        */
     }
 
 }

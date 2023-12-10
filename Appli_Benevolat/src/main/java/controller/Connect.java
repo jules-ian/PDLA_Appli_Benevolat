@@ -7,17 +7,21 @@ public class Connect {
     private static final String username = "projet_gei_034";
     private static final String password = "Ohphie5u";
     private Connection myConnection ;
-    public Connect() {
-        try {
+    public Connect() throws SQLException {
             myConnection = DriverManager.getConnection(jdbcURL,username,password );
             Statement statement = myConnection.createStatement();
             statement.execute("USE projet_gei_034");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
     public Connection getConnection() {
         return this.myConnection;
     }
 
 }
+
+
+
+
+
+
+
+

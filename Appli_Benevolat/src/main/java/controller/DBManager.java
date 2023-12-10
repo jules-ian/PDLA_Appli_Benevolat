@@ -15,38 +15,46 @@ public class DBManager {
     }
 
     /** Deletes the table users */
-    public void remove_user_db(){
-        try {
+    public void remove_user_db() throws SQLException {
             Statement statement = this.connection.createStatement();
             String removeTableSQL = "DROP TABLE users";
             statement.executeUpdate(removeTableSQL);
             System.out.println("Table users supprimée avec succès.");
-        } catch (SQLException e) {
-            System.out.println("Table Users inexistante");
-        }
     }
 
     /** Deletes the table missions */
-    public void remove_mission_db(){
-        try {
+    public void remove_mission_db() throws SQLException {
             Statement statement = this.connection.createStatement();
             String removeTableSQL = "DROP TABLE missions";
             statement.executeUpdate(removeTableSQL);
             System.out.println("Table missions supprimée avec succès.");
-        } catch (SQLException e) {
-            System.out.println("Table Mission inexistante");
-        }
     }
 
     /** Deletes all the tables */
     public void reset_db(){
+
+        try {
             remove_mission_db();
+        }catch (SQLException e) {
+            System.out.println("Could not delete mission table");
+            // Normal if tables are already deleted
+        }
+
+        try {
             remove_user_db();
+        }catch (SQLException e) {
+            System.out.println("Could not delete user table");
+            // Normal if tables are already deleted
+        }
     }
 
+    /** Creates the tables users and missions */
+    public void createTables() throws SQLException {
+        create_user_db();
+        create_mission_db();
+    }
     /** Creates the table users */
-    public void create_user_db(){ // DB avec tous les utilisateurs => champ type pour identifier Asker, Volunteer, Admin
-        try {
+    public void create_user_db() throws SQLException { // DB avec tous les utilisateurs => champ type pour identifier Asker, Volunteer, Admin
             Statement statement = this.connection.createStatement();
             String createTableSQL = "CREATE TABLE users ("
                     + "id INT PRIMARY KEY,"
@@ -56,36 +64,29 @@ public class DBManager {
                     + "type VARCHAR(10) NOT NULL)";
             statement.executeUpdate(createTableSQL);
             System.out.println("Table users créée avec succès.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     /** Creates the table missions */
-    public void create_mission_db(){ // DB avec toutes les missions
-        try {
+    public void create_mission_db() throws SQLException { // DB avec toutes les missions
             Statement statement = this.connection.createStatement();
             String createTableSQL = "CREATE TABLE missions ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY,"
                     + "description VARCHAR(255) NOT NULL,"
                     + "askerID INT NOT NULL,"
-                    + "volunteerID INT DEFAULT 0,"
-                    + "FOREIGN KEY (askerID) REFERENCES users(id) ON DELETE CASCADE,"
-                    + "FOREIGN KEY (volunteerID) REFERENCES users(id))"; //ON DELETE SET DEFAULT
+                    //+ "volunteerID INT)";
+                    + "volunteerID INT,"
+                    + "FOREIGN KEY (askerID) REFERENCES users(id) ON DELETE CASCADE)";
             statement.executeUpdate(createTableSQL);
             System.out.println("Table missions créée avec succès.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     /** Adds a user to the DB */
-    public void addUser(User user) {
+    public void addUser(User user) throws SQLException {
         //private Connection connect ;
 
         //TODO: Mettre tout les attributs de asker avec les get
         String insertQuery = "INSERT INTO users (id,nom,prenom,age,type) VALUES (?,?,?,?,?)";
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(insertQuery)) {
+        PreparedStatement preparedStatement = this.connection.prepareStatement(insertQuery);
             preparedStatement.setInt(1, user.getUid());
             preparedStatement.setString(2, user.getNom());
             preparedStatement.setString(3, user.getPrenom());
@@ -93,35 +94,31 @@ public class DBManager {
             preparedStatement.setString(5, user.getClass().getSimpleName());
 
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-        }
     }
 
     /** Adds a mission to the DB */
-    public void addMission(Mission mission) {
+    public void addMission(Mission mission) throws SQLException {
         //private Connection connect ;
-
-        //TODO: Mettre tout les attributs de asker avec les get
-        String insertQuery = "INSERT INTO missions (description,askerID,volunteerID) VALUES (?,?,?)";
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(insertQuery)) {
+        if(mission.getVolunteerID() == -1){
+            String insertQuery = "INSERT INTO missions (description,askerID) VALUES (?,?)";
+            PreparedStatement preparedStatement = this.connection.prepareStatement(insertQuery);
+            preparedStatement.setString(1, mission.getDescription());
+            preparedStatement.setInt(2, mission.getAskerID());
+            preparedStatement.executeUpdate();
+        }else{
+            String insertQuery = "INSERT INTO missions (description,askerID,volunteerID) VALUES (?,?,?)";
+            PreparedStatement preparedStatement = this.connection.prepareStatement(insertQuery);
             preparedStatement.setString(1, mission.getDescription());
             preparedStatement.setInt(2, mission.getAskerID());
             preparedStatement.setInt(3, mission.getVolunteerID());
-
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-
         }
     }
 
 
     /** Gets a Mission from the DB by ID*/
-    public Mission getMission(int id){
+    public Mission getMission(int id) throws SQLException {
         String getQuery = "SELECT * FROM missions WHERE id = ?";
-        try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
             preparedStatement.setInt(1, id);
 
@@ -134,19 +131,14 @@ public class DBManager {
 
                 return new Mission(desc, Aid, Vid, Mid);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-        }
 
         return null;
     }
 
     /** Gets all the Missions of the DB */
-    public ArrayList<Mission> getAllMissions(){
+    public ArrayList<Mission> getAllMissions() throws SQLException {
         String getQuery = "SELECT * FROM missions";
         ArrayList<Mission> Qresult = new ArrayList<>();
-        try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -158,9 +150,6 @@ public class DBManager {
 
                 Qresult.add(new Mission(desc, Aid, Vid, Mid));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         return Qresult;
     }
@@ -168,33 +157,32 @@ public class DBManager {
     /** Gets a User from the DB by ID*/
     public User getUser(int id) throws SQLException, UserNotFoundException {
         String getQuery = "SELECT * FROM users WHERE id = ?";
-            PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
-            preparedStatement.setInt(1, id);
+        PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
+        preparedStatement.setInt(1, id);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                int Uid = resultSet.getInt("id");
-                String nom = resultSet.getString("nom");
-                String prenom = resultSet.getString("prenom");
-                int age = resultSet.getInt("age");
-                String type = resultSet.getString("type");
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            int Uid = resultSet.getInt("id");
+            String nom = resultSet.getString("nom");
+            String prenom = resultSet.getString("prenom");
+            int age = resultSet.getInt("age");
+            String type = resultSet.getString("type");
 
-                return switch (type) {
-                    case "Asker" -> new Asker(nom, prenom, age, Uid);
-                    case "Volunteer" -> new Volunteer(nom, prenom, age, Uid);
-                    case "Admin" -> new Admin(nom, prenom, age, Uid);
-                    default -> throw new RuntimeException("Unrecognised type " + type);
-                };
-            }else{
-                throw new UserNotFoundException(id);
-            }
+            return switch (type) {
+                case "Asker" -> new Asker(nom, prenom, age, Uid);
+                case "Volunteer" -> new Volunteer(nom, prenom, age, Uid);
+                case "Admin" -> new Admin(nom, prenom, age, Uid);
+                default -> throw new RuntimeException("Unrecognised type " + type);
+            };
+        }else{
+            throw new UserNotFoundException(id);
+        }
     }
 
     /** Gets all the Missions asked by a specific Asker */
-    public ArrayList<Mission> get_missions_of_asker(int id){
+    public ArrayList<Mission> get_missions_of_asker(int id) throws SQLException {
         String getQuery = "SELECT * FROM missions WHERE askerID = ?";
         ArrayList<Mission> result = new ArrayList<>();
-        try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(getQuery);
             preparedStatement.setInt(1, id);
 
@@ -205,12 +193,8 @@ public class DBManager {
                 int Aid = resultSet.getInt("askerID");
                 int Vid = resultSet.getInt("volunteerID");
 
-                 result.add(new Mission(desc, Aid, Vid, Mid));
+                result.add(new Mission(desc, Aid, Vid, Mid));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-        }
 
         return result;
     }
